@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Edumate</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body style="
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #4f46e5, #8e7bae);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+">
+
+<div style="
+    width: 100%;
+    max-width: 1000px;
+    background: white;
+    border-radius: 30px;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+">
+
+    <!-- LEFT SIDE -->
+
+    <div style="
+        background: linear-gradient(135deg,#4f46e5,#7c3aed);
+        color: white;
+        padding: 60px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    ">
+
+        <h1 style="
+            font-size: 48px;
+            margin-bottom: 20px;
+        ">
+            Welcome Back
+        </h1>
+
+        <p style="
+            font-size: 18px;
+            line-height: 1.7;
+            opacity: 0.9;
+        ">
+            Login to continue learning from real experts on Edumate.
+        </p>
+
+    </div>
+
+    <!-- RIGHT SIDE -->
+
+    <div style="
+        padding: 60px;
+        display: flex;
+        align-items: center;
+    ">
+
+        <form style="width: 100%;">
+
+            <h2 style="
+                font-size: 36px;
+                margin-bottom: 40px;
+                color: #0f172a;
+            ">
+                Login
+            </h2>
+            <div style="margin-bottom: 25px;">
+
+                <label style="
+                    display: block;
+                    margin-bottom: 10px;
+                    font-weight: 500;
+                ">
+                    Email
+                </label>
+
+                <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email"
+
+                        style="
+                        width: 100%;
+                        padding: 16px;
+                        border-radius: 14px;
+                        border: 1px solid #cbd5e1;
+                        outline: none;
+                        font-size: 16px;
+                "
+                >
+
+            </div>
+            <div style="margin-bottom: 25px;">
+
+                <label style="
+                    display: block;
+                    margin-bottom: 10px;
+                    font-weight: 500;
+                ">
+                    Password
+                </label>
+
+                <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter your password"
+
+                        style="
+                        width: 100%;
+                        padding: 16px;
+                        border-radius: 14px;
+                        border: 1px solid #cbd5e1;
+                        outline: none;
+                        font-size: 16px;
+                "
+                >
+
+            </div>
+
+            <button
+                    type="button"
+                    onclick="loginUser()"
+
+                    style="
+                    width: 100%;
+                    padding: 16px;
+                    border: none;
+                    border-radius: 14px;
+                    background: linear-gradient(135deg,#4f46e5,#7c3aed);
+                    color: white;
+                    font-size: 16px;
+                    font-weight: 600;
+                    cursor: pointer;
+            "
+            >
+                Login
+            </button>
+
+            <p style="
+                margin-top: 25px;
+                text-align: center;
+                color: #64748b;
+            ">
+
+                Don't have an account?
+
+                <a
+                        href="register.html"
+
+                        style="
+                        color: #4f46e5;
+                        text-decoration: none;
+                        font-weight: 600;
+                "
+                >
+                    Register
+                </a>
+
+            </p>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+    async function loginUser() {
+
+        const email = document.getElementById("email").value;
+
+        const password = document.getElementById("password").value;
+
+        if(email === "" || password === "") {
+
+            alert("Please fill all fields");
+
+            return;
+        }
+
+        try {
+        // LOGIN REQUEST
+
+const response = await fetch(
+    "http://localhost:9090/auth/login",
+    {
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+            email,
+            password
+        })
+    }
+);
+
+const data = await response.json();
+
+if(response.ok) {
+
+    // FETCH COMPLETE USER DETAILS
+
+    const userResponse = await fetch(
+        `http://localhost:9090/users/${data.userId}`
+    );
+
+    const fullUser =
+        await userResponse.json();
+
+    // STORE FULL USER
+
+    localStorage.setItem(
+        "user",
+        JSON.stringify(fullUser)
+    );
+
+    alert("Login Successful");
+
+    window.location.href =
+        "dashboard.html";
+
+}
+
+             else {
+
+                alert(data.message || "Login Failed");
+            }
+
+        } catch(error) {
+
+            console.log(error);
+
+            alert("Server Error");
+        }
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edumate</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo">Edumate</div>
+
+    <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="pages/search.html">Explore Skills</a></li>
+        <li><a href="pages/dashboard.html">Dashboard</a></li>
+    </ul>
+
+    <div class="nav-actions">
+        <input type="text" placeholder="Search skills..." />
+    </div>
+    <div class="nav-actions" id="navActions">
+
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>Learn Skills From Real Experts</h1>
+        <p>Connect with talented mentors and master real-world skills.</p>
+
+        <div class="hero-search">
+            <input type="text" placeholder="Search Java, React, Spring Boot..." />
+            <button>Search</button>
+        </div>
+    </div>
+</section>
+
+<section class="skills-section">
+    <h2>Trending Skills</h2>
+
+    <div class="skills-grid" id="skillsContainer">
+
+        <div class="skill-card">
+            <h3>Spring Boot</h3>
+            <p>Backend Development</p>
+            <span>120 Mentors</span>
+        </div>
+
+        <div class="skill-card">
+            <h3>React JS</h3>
+            <p>Frontend Development</p>
+            <span>95 Mentors</span>
+        </div>
+
+        <div class="skill-card">
+            <h3>Machine Learning</h3>
+            <p>AI & Data Science</p>
+            <span>75 Mentors</span>
+        </div>
+
+        <div class="skill-card">
+            <h3>UI/UX Design</h3>
+            <p>Design</p>
+            <span>80 Mentors</span>
+        </div>
+
+    </div>
+</section>
+
+<section class="mentors-section">
+    <h2>Top Mentors</h2>
+
+    <div class="mentors-grid">
+
+        <div class="mentor-card">
+            <img src="assets/images/profile1.jpg" alt="mentor" />
+            <h3>Akshitha</h3>
+            <p>Spring Boot Expert</p>
+            <span>⭐ 4.9</span>
+            <a href="pages/profile.html">View Profile</a>
+        </div>
+
+        <div class="mentor-card">
+            <img src="assets/images/profile2.jpg" alt="mentor" />
+            <h3>Rahul</h3>
+            <p>React Developer</p>
+            <span>⭐ 4.8</span>
+            <a href="pages/profile.html">View Profile</a>
+        </div>
+
+        <div class="mentor-card">
+            <img src="assets/images/profile3.jpg" alt="mentor" />
+            <h3>Neha</h3>
+            <p>UI/UX Designer</p>
+            <span>⭐ 4.7</span>
+            <a href="pages/profile.html">View Profile</a>
+        </div>
+
+    </div>
+</section>
+
+<footer>
+    <p>© 2026 Edumate. All Rights Reserved.</p>
+</footer>
+<script>
+
+    function goToLogin() {
+
+        window.location.href = "./pages/login.html";
+    }
+    function logoutUser(){
+    localStorage.removeItem("user");
+    alert("Logged out");
+    window.location.reload();
+}
+
+function updateNavbar(){
+    const navActions=document.getElementById("navActions");
+    const user=JSON.parse(localStorage.getItem("user"));
+
+    if(user){
+        navActions.innerHTML = `
+            <span style="
+                color:#30369e;
+                font-weight: 600;
+                margin-right: 15px;
+            ">
+                Hi ${user.name}
+            </span>
+
+            <button onclick="
+                window.location.href='pages/dashboard.html'
+            ">
+                Dashboard
+            </button>
+
+            <button onclick="logoutUser()">
+                Logout
+            </button>
+        `;
+    }
+    else{
+        navActions.innerHTML = `
+            <button onclick="goToLogin()">
+                Login
+            </button>
+        `;
+    }
+}
+
+
+
+    async function loadSkills() {
+
+        const response = await fetch("http://localhost:9090/skills");
+
+        const skills = await response.json();
+
+        const container = document.getElementById("skillsContainer");
+
+        if(container) {
+
+            container.innerHTML = "";
+
+            skills.forEach(skill => {
+
+                container.innerHTML += `
+                <div class="skill-card">
+                    <h3>${skill.title}</h3>
+                    <p>${skill.description}</p>
+                    <span>${skill.experienceLevel}</span>
+                </div>
+                `;
+            });
+        }
+    }
+
+    loadSkills();
+    updateNavbar();
+
+</script>
+
+</body>
+</html>
+
+

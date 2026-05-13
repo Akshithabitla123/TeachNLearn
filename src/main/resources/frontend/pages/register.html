@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Edumate</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body style="
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #4f46e5, #8e7bae);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+">
+
+<div style="
+    width: 100%;
+    max-width: 1000px;
+    background: white;
+    border-radius: 30px;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+">
+
+    <!-- LEFT SIDE -->
+
+    <div style="
+        background: linear-gradient(135deg,#4f46e5,#7c3aed);
+        color: white;
+        padding: 60px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    ">
+
+        <h1 style="
+            font-size: 48px;
+            margin-bottom: 20px;
+        ">
+            Join Edumate
+        </h1>
+
+        <p style="
+            font-size: 18px;
+            line-height: 1.7;
+            opacity: 0.9;
+        ">
+            Create your account and start learning or teaching amazing skills.
+        </p>
+
+    </div>
+
+    <!-- RIGHT SIDE -->
+
+    <div style="
+        padding: 60px;
+        display: flex;
+        align-items: center;
+    ">
+
+        <form style="width: 100%;">
+
+            <h2 style="
+                font-size: 36px;
+                margin-bottom: 40px;
+                color: #0f172a;
+            ">
+                Register
+            </h2>
+
+            <!-- NAME -->
+
+            <div style="margin-bottom: 25px;">
+
+                <label style="
+                    display: block;
+                    margin-bottom: 10px;
+                    font-weight: 500;
+                ">
+                    Name
+                </label>
+
+                <input
+                        type="text"
+                        id="name"
+                        placeholder="Enter your name"
+
+                        style="
+                        width: 100%;
+                        padding: 16px;
+                        border-radius: 14px;
+                        border: 1px solid #cbd5e1;
+                        outline: none;
+                        font-size: 16px;
+                "
+                >
+
+            </div>
+
+            <!-- EMAIL -->
+
+            <div style="margin-bottom: 25px;">
+
+                <label style="
+                    display: block;
+                    margin-bottom: 10px;
+                    font-weight: 500;
+                ">
+                    Email
+                </label>
+
+                <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email"
+
+                        style="
+                        width: 100%;
+                        padding: 16px;
+                        border-radius: 14px;
+                        border: 1px solid #cbd5e1;
+                        outline: none;
+                        font-size: 16px;
+                "
+                >
+
+            </div>
+
+            <!-- PASSWORD -->
+
+            <div style="margin-bottom: 25px;">
+
+                <label style="
+                    display: block;
+                    margin-bottom: 10px;
+                    font-weight: 500;
+                ">
+                    Password
+                </label>
+
+                <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter your password"
+
+                        style="
+                        width: 100%;
+                        padding: 16px;
+                        border-radius: 14px;
+                        border: 1px solid #cbd5e1;
+                        outline: none;
+                        font-size: 16px;
+                "
+                >
+
+            </div>
+
+            <!-- BUTTON -->
+
+            <button
+                    type="button"
+                    onclick="registerUser()"
+
+                    style="
+                    width: 100%;
+                    padding: 16px;
+                    border: none;
+                    border-radius: 14px;
+                    background: linear-gradient(135deg,#4f46e5,#7c3aed);
+                    color: white;
+                    font-size: 16px;
+                    font-weight: 600;
+                    cursor: pointer;
+            "
+            >
+                Register
+            </button>
+
+            <p style="
+                margin-top: 25px;
+                text-align: center;
+                color: #64748b;
+            ">
+
+                Already have an account?
+
+                <a
+                        href="login.html"
+
+                        style="
+                        color: #4f46e5;
+                        text-decoration: none;
+                        font-weight: 600;
+                "
+                >
+                    Login
+                </a>
+
+            </p>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+    async function registerUser() {
+
+        const name =
+            document.getElementById("name").value;
+
+        const email =
+            document.getElementById("email").value;
+
+        const password =
+            document.getElementById("password").value;
+
+        if(name === "" || email === "" || password === "") {
+
+            alert("Please fill all fields");
+
+            return;
+        }
+
+        try {
+
+            const response = await fetch(
+                "http://localhost:9090/auth/register",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        name: name,
+                        email: email,
+                        password: password
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            if(response.ok) {
+
+                alert("Registration Successful");
+
+                // Redirect to login
+                window.location.href = "login.html";
+
+            } else {
+
+                alert(data.message || "Registration Failed");
+            }
+
+        } catch(error) {
+
+            console.log(error);
+
+            alert("Server Error");
+        }
+    }
+
+</script>
+
+</body>
+</html>

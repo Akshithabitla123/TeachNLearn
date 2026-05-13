@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Dashboard</title>
+
+    <link rel="stylesheet" href="../style.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="dashboard">
+    <aside class="sidebar">
+        <h2>Edumate</h2>
+        <ul>
+            <li onclick="showSection('dashboardSection')">
+                Dashboard
+            </li>
+            <li onclick="showSection('profileSection')">
+                Update Profile
+            </li>
+            <li onclick="showSection('skillsSection')">
+                My Skills
+            </li>
+            <li onclick="showSection('addSkillSection')">
+                Add Skill
+            </li>
+            <li onclick="logoutUser()">
+                Logout
+            </li>
+        </ul>
+
+    </aside>
+
+
+    <main class="dashboard-content">
+        <section id="dashboardSection">
+
+            <div class="dashboard-header">
+
+                <h1 id="welcomeText">
+                    Welcome Back
+                </h1>
+                <div class="user-profile-card">
+
+                    <div class="profile-left">
+
+                        <img id="profileImageDisplay" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="profile">
+
+                    </div>
+
+                    <div class="profile-right">
+
+                        <h2 id="userName"></h2>
+
+                        <p id="userEmail"></p>
+
+                        <p id="userBio"></p>
+
+                        <div class="profile-links">
+
+                            <a id="linkedinLink"
+                               target="_blank">
+                                LinkedIn
+                            </a>
+
+                            <a id="githubLink"
+                               target="_blank">
+                                GitHub
+                            </a>
+
+                        </div>
+
+                        <div class="profile-bottom">
+
+            <span id="userRating">
+            </span>
+
+                            <span id="userVerified">
+            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+                    <h3>Skills Uploaded</h3>
+                    <p>12</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Total Students</h3>
+                    <p>84</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Rating</h3>
+                    <p>4.9</p>
+                </div>
+
+            </div>
+
+        </section>
+        <section id="profileSection"
+                 style="display:none;">
+
+            <h2>Update Profile</h2>
+
+            <div class="profile-form">
+
+                <input
+                        type="text"
+                        id="bio"
+                        placeholder="Enter your bio"
+                >
+
+                <input
+                        type="text"
+                        id="linkedin"
+                        placeholder="LinkedIn Profile"
+                >
+
+                <input
+                        type="text"
+                        id="github"
+                        placeholder="GitHub Profile">
+
+                <input
+                        type="text"
+                        id="profileImage"
+                        placeholder="Profile Image URL"
+                >
+
+                <button onclick="updateProfile()">
+                    Save Profile
+                </button>
+
+            </div>
+
+        </section>
+
+        <section id="skillsSection"
+                 style="display:none;">
+
+            <div class="my-skills">
+
+                <h2>My Skills</h2>
+
+                <div id="mySkillsContainer">
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section id="addSkillSection"
+                 style="display:none;">
+
+            <h2>Add Skill</h2>
+
+            <div class="profile-form">
+
+                <input
+                        type="text"
+                        id="title"
+                        placeholder="Skill Title"
+                >
+
+                <input
+                        type="text"
+                        id="description"
+                        placeholder="Description"
+                >
+
+                <input
+                        type="text"
+                        id="category"
+                        placeholder="Category"
+                >
+
+                <input
+                        type="text"
+                        id="experienceLevel"
+                        placeholder="Experience Level"
+                >
+
+                <input
+                        type="number"
+                        id="price"
+                        placeholder="Price"
+                >
+
+                <input
+                        type="text"
+                        id="thumbnail"
+                        placeholder="Thumbnail URL"
+                >
+
+                <button onclick="addSkill()">
+                    Upload Skill
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+
+    const user =
+        JSON.parse(localStorage.getItem("user"));
+
+    if(!user) {
+
+        window.location.href = "login.html";
+    }
+
+    // Welcome Text
+    document.getElementById("welcomeText")
+    .innerText = `Welcome Back, ${user.name}`;
+<!--    profile section-->
+    document.getElementById("userName")
+.innerText = user.name;
+
+document.getElementById("userEmail")
+.innerText = user.email;
+
+document.getElementById("userBio")
+.innerText =
+    user.bio || "No bio added";
+
+document.getElementById("profileImageDisplay")
+.src =
+    user.profileImage ||
+    "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+
+document.getElementById("linkedinLink")
+.href =
+    user.linkedIn || alert("LinkedIn not added yet");
+
+document.getElementById("githubLink")
+.href =
+    user.github || alert("Github Not added yet");
+
+document.getElementById("userRating")
+.innerText =
+    `⭐ Rating: ${user.rating || 0}`;
+
+document.getElementById("userVerified")
+.innerText =
+    user.verified
+        ? "✔ Verified Mentor"
+        : "❌ Not Verified";
+
+
+    // SECTION SWITCHING
+    function showSection(sectionId) {
+
+        document.getElementById("dashboardSection")
+            .style.display = "none";
+
+        document.getElementById("profileSection")
+            .style.display = "none";
+
+        document.getElementById("skillsSection")
+            .style.display = "none";
+
+        document.getElementById("addSkillSection")
+            .style.display = "none";
+
+        document.getElementById(sectionId)
+            .style.display = "block";
+    }
+
+    // LOGOUT
+
+    function logoutUser() {
+
+        localStorage.removeItem("user");
+
+        window.location.href = "../index.html";
+    }
+
+    // UPDATE PROFILE
+
+    async function updateProfile() {
+
+        const bio =
+            document.getElementById("bio").value;
+
+        const linkedIn =
+            document.getElementById("linkedin").value;
+
+        const github =
+            document.getElementById("github").value;
+
+        const profileImage =
+            document.getElementById("profileImage").value;
+
+        try {
+
+            const response = await fetch(
+                `http://localhost:9090/users/profile/${user.id}`,
+                {
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        bio,
+                        linkedIn,
+                        github,
+                        profileImage
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            if(response.ok) {
+
+                localStorage.setItem(
+                    "user",
+                    JSON.stringify(data)
+                );
+
+                alert("Profile Updated");
+
+            } else {
+
+                alert("Update Failed");
+            }
+
+        } catch(error) {
+
+            console.log(error);
+
+            alert("Server Error");
+        }
+    }
+
+    // ADD SKILL
+
+    async function addSkill() {
+
+        const title =
+            document.getElementById("title").value;
+
+        const description =
+            document.getElementById("description").value;
+
+        const category =
+            document.getElementById("category").value;
+
+        const experienceLevel =
+            document.getElementById("experienceLevel").value;
+
+        const price =
+            document.getElementById("price").value;
+
+        const thumbnail =
+            document.getElementById("thumbnail").value;
+
+        try {
+
+            const response = await fetch(
+                `http://localhost:9090/skills/${user.id}`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        title,
+                        description,
+                        category,
+                        experienceLevel,
+                        price,
+                        thumbnail
+                    })
+                }
+            );
+
+            if(response.ok) {
+
+                alert("Skill Uploaded");
+                 window.location.href = "dashboard.html";
+
+            } else {
+
+                alert("Upload Failed");
+            }
+
+        } catch(error) {
+
+            console.log(error);
+
+            alert("Server Error");
+        }
+    }
+
+    // LOAD USER SKILLS
+
+    async function loadMySkills() {
+
+        try {
+
+            const response = await fetch(
+                `http://localhost:9090/skills/user/${user.id}`
+            );
+
+            const skills = await response.json();
+
+            const container =
+                document.getElementById("mySkillsContainer");
+
+            container.innerHTML = "";
+
+            skills.forEach(skill => {
+
+                container.innerHTML += `
+                    <div class="skill-card">
+
+                        <h3>${skill.title}</h3>
+
+                        <p>${skill.description}</p>
+
+                    </div>
+                `;
+            });
+
+        } catch(error) {
+
+            console.log(error);
+        }
+    }
+
+    // INITIAL LOAD
+
+    loadMySkills();
+
+</script>
+
+</body>
+</html>
