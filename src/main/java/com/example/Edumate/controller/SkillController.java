@@ -48,4 +48,9 @@ public class SkillController {
     public List<SkillResponseDTO> getSkillsByExperienceLevel(@RequestParam String level){
         return skillService.getSkillsByExperienceLevel(level);
     }
+    //get specific of a specific user
+    @GetMapping("/user/{userId}/skill/{skillId}")
+    public SkillResponseDTO getSkillOfUser(@PathVariable Long userId,@PathVariable Long skillId){
+        return skillService.getSkillOfUser(userId, skillId);
+    }
 }

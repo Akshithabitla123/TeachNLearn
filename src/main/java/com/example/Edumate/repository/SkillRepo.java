@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SkillRepo extends JpaRepository<Skill,Long> {
@@ -19,4 +20,10 @@ public interface SkillRepo extends JpaRepository<Skill,Long> {
     List<Skill> findByUserId(Long userId);
     //count skills per user
     int countByUserId(Long userId);
+    //find specific skill of a specific user
+    Optional<Skill> findByIdAndUserId(
+            Long skillId,
+            Long userId
+    );
+
 }

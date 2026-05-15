@@ -300,7 +300,7 @@ async function searchSkills(){
 
                 <button
                     class="view-btn"
-                    onclick="viewProfile(${skill.userDTO.id})"
+                    onclick="viewProfile(${skill.userDTO.id},${skill.id})"
                 >
                     View Profile
                 </button>
@@ -316,8 +316,8 @@ async function searchSkills(){
     }
 }
 
-function viewProfile(userId){
-    window.location.href=`mentor-profile.html?id=${userId}`;
+function viewProfile(userId,skillId){
+    window.location.href=`skill-profile.html?userId=${userId}&skillId=${skillId}`;
 }
 
 </script>

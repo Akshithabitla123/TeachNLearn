@@ -86,4 +86,17 @@ public class SkillService {
                 .map(this::mapToDTO)
                 .toList();
     }
+    //get searched skill of user
+    public SkillResponseDTO getSkillOfUser(
+            Long userId,
+            Long skillId
+    ) {
+
+        Skill skill = skillRepo
+                .findByIdAndUserId(skillId, userId)
+                .orElseThrow(() ->
+                        new RuntimeException("Skill not found"));
+
+        return mapToDTO(skill);
+    }
 }

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Mentor Profile</title>
+
+    <link rel="stylesheet" href="skill-profile.css">
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="profile-container">
+
+    <div class="mentor-card">
+
+        <img id="mentorImage">
+
+        <h1 id="mentorName"></h1>
+
+        <p id="mentorBio"></p>
+
+        <div class="social-links">
+
+            <a id="linkedinLink" target="_blank">
+                <i class="fab fa-linkedin"></i>
+                LinkedIn
+            </a>
+
+            <a id="githubLink" target="_blank">
+                <i class="fab fa-github"></i>
+                GitHub
+            </a>
+
+        </div>
+
+        <div class="rating">
+            <i class="fa-solid fa-star"></i> <span id="mentorRating"></span>
+        </div>
+        <button class="view-btn">
+            View All skills
+        </button>
+
+
+    </div>
+
+    <div class="skill-section">
+
+        <h2>Selected Skill</h2>
+
+        <div class="skill-card">
+
+            <h3 id="skillTitle"></h3>
+
+            <p
+                    class="description"
+                    id="skillDescription"
+            ></p>
+
+            <div class="skill-meta">
+
+                <span id="skillCategory"></span>
+
+                <span id="skillLevel"></span>
+
+            </div>
+
+            <div
+                    class="price"
+                    id="skillPrice"
+            ></div>
+
+            <button class="book-btn">
+                Book Session
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    const params =
+        new URLSearchParams(window.location.search);
+
+    const userId =
+        params.get("userId");
+
+    const skillId =
+        params.get("skillId");
+
+    console.log(userId);
+    console.log(skillId);
+
+    async function loadProfile(){
+
+        try{
+
+            const response = await fetch(
+                `http://localhost:9090/skills/user/${userId}/skill/${skillId}`
+            );
+
+            if(!response.ok){
+
+                throw new Error("API Failed");
+            }
+
+            const skill = await response.json();
+
+            console.log(skill);
+
+            const user = skill.userDTO;
+
+            // USER INFO
+
+            document.getElementById("mentorImage").src =
+<!--                user.profileImage ||-->
+                "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+
+            document.getElementById("mentorName").innerText =
+                user.name;
+
+            document.getElementById("mentorBio").innerText =
+                user.bio || "No bio available";
+
+            document.getElementById("mentorRating").innerText =
+                user.rating || 0;
+
+            document.getElementById("linkedinLink").href =
+                user.linkedIn || "#";
+
+            document.getElementById("githubLink").href =
+                user.github || "#";
+
+            // SKILL INFO
+
+            document.getElementById("skillTitle").innerText =
+                skill.title;
+
+            document.getElementById("skillDescription").innerText =
+                skill.description;
+
+            document.getElementById("skillCategory").innerText =
+                "Category : " + skill.category;
+
+            document.getElementById("skillLevel").innerText =
+                "Level : " + skill.experienceLevel;
+
+            document.getElementById("skillPrice").innerText =
+                "₹ " + skill.price;
+
+        }
+        catch(error){
+
+            console.log(error);
+
+            alert("Failed to load mentor profile");
+        }
+    }
+
+    loadProfile();
+
+</script>
+
+</body>
+</html>
