@@ -17,4 +17,6 @@ public interface SkillRepo extends JpaRepository<Skill,Long> {
     List<Skill> findByExperienceLevelIgnoreCase(String experienceLevel);
     //find skills of a specific user
     List<Skill> findByUserId(Long userId);
+    //count skills per user
+    int countByUserId(Long userId);
 }

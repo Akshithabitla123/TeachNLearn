@@ -1,5 +1,6 @@
 package com.example.Edumate.controller;
 
+import com.example.Edumate.dto.SummaryDTO;
 import com.example.Edumate.dto.UpdateProfileDTO;
 import com.example.Edumate.dto.UserDTO;
 import com.example.Edumate.model.User;
@@ -44,5 +45,9 @@ public class UserController {
         return userService.updateProfile(id,request);
     }
     //get summary
+    @GetMapping("/summary/{id}")
+    public SummaryDTO getSummary(@PathVariable Long id){
+        return userService.getSummary(id);
+    }
 
 }

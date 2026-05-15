@@ -3,7 +3,7 @@ package com.example.Edumate.dto;
 public class SummaryDTO {
     private int totalSkills;
     private int totalStudents;
-    private int rating;
+    private Double rating;
 
     public int getTotalSkills() {
         return totalSkills;
@@ -21,11 +21,11 @@ public class SummaryDTO {
         this.totalStudents = totalStudents;
     }
 
-    public int getRating() {
+    public Double getRating() {
         return rating;
     }
 
-    public void setRating(int rating) {
+    public void setRating(Double rating) {
         this.rating = rating;
     }
 }

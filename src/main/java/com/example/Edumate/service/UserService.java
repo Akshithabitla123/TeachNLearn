@@ -1,8 +1,10 @@
 package com.example.Edumate.service;
 
+import com.example.Edumate.dto.SummaryDTO;
 import com.example.Edumate.dto.UpdateProfileDTO;
 import com.example.Edumate.dto.UserDTO;
 import com.example.Edumate.model.User;
+import com.example.Edumate.repository.SkillRepo;
 import com.example.Edumate.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,8 @@ import java.util.List;
 public class UserService {
     @Autowired
     private UserRepo userRepo;
+    @Autowired
+    private SkillRepo skillRepo;
 
     //save user
     public String saveUser(User user){
@@ -78,5 +82,15 @@ public class UserService {
         user.setProfileImage(request.getProfileImage());
         return userRepo.save(user);
     }
-
+    //get summary
+    public SummaryDTO getSummary(Long id) {
+        User user=userRepo.findById(id)
+                .orElseThrow(()->new RuntimeException("User not found"));
+        SummaryDTO dto=new SummaryDTO();
+        int totalSkills=skillRepo.countByUserId(id);
+        dto.setTotalSkills(totalSkills);
+        dto.setTotalStudents(12);//set to some random
+        dto.setRating(user.getRating()==null?0: user.getRating());
+        return dto;
+    }
 }

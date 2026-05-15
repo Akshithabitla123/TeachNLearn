@@ -6,7 +6,7 @@
 
     <title>Dashboard</title>
 
-    <link rel="stylesheet" href="../style.css" />
+    <link rel="stylesheet" href="style.css" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -98,17 +98,17 @@
 
                 <div class="stat-card">
                     <h3>Skills Uploaded</h3>
-                    <p>12</p>
+                    <p id="totalSkills">0</p>
                 </div>
 
                 <div class="stat-card">
                     <h3>Total Students</h3>
-                    <p>84</p>
+                    <p id="totalStudents">0</p>
                 </div>
 
                 <div class="stat-card">
                     <h3>Rating</h3>
-                    <p>4.9</p>
+                    <p id="rating">0</p>
                 </div>
 
             </div>
@@ -296,7 +296,7 @@ document.getElementById("userVerified")
 
         localStorage.removeItem("user");
 
-        window.location.href = "../index.html";
+        window.location.href = "index.html";
     }
 
     // UPDATE PROFILE
@@ -460,6 +460,22 @@ document.getElementById("userVerified")
     // INITIAL LOAD
 
     loadMySkills();
+
+    //load summary of the user
+    async function loadSummary(){
+        try{
+            const response=await fetch(`http://localhost:9090/users/summary/${user.id}`);
+            const summary=await response.json();
+            document.getElementById("totalSkills").innerText=summary.totalSkills;
+            document.getElementById("totalStudents").innerText=summary.totalStudents;
+            document.getElementById("rating").innerText=summary.rating;
+
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+    loadSummary();
 
 </script>
 

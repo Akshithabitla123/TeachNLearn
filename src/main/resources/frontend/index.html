@@ -8,7 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
 </head>
 <body>
 
@@ -17,13 +18,9 @@
 
     <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
-        <li><a href="pages/search.html">Explore Skills</a></li>
-        <li><a href="pages/dashboard.html">Dashboard</a></li>
+        <li><a href="search.html">Explore Skills</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
     </ul>
-
-    <div class="nav-actions">
-        <input type="text" placeholder="Search skills..." />
-    </div>
     <div class="nav-actions" id="navActions">
 
     </div>
@@ -35,11 +32,25 @@
         <p>Connect with talented mentors and master real-world skills.</p>
 
         <div class="hero-search">
-            <input type="text" placeholder="Search Java, React, Spring Boot..." />
-            <button>Search</button>
+            <input type="text" id="searchInput" placeholder="Search Java, React, Spring Boot..." />
+            <button onclick="searchSkills()">Search</button>
         </div>
     </div>
 </section>
+<section class="skills-section" id="searchSection" style="display:none;">
+
+    <h2>Search Results</h2>
+
+    <div
+            class="skills-grid"
+            id="searchResults"
+
+    >
+
+    </div>
+
+</section>
+
 
 <section class="skills-section">
     <h2>Trending Skills</h2>
@@ -74,35 +85,91 @@
 </section>
 
 <section class="mentors-section">
+
     <h2>Top Mentors</h2>
 
     <div class="mentors-grid">
 
         <div class="mentor-card">
-            <img src="assets/images/profile1.jpg" alt="mentor" />
-            <h3>Akshitha</h3>
-            <p>Spring Boot Expert</p>
-            <span>⭐ 4.9</span>
-            <a href="pages/profile.html">View Profile</a>
+
+            <div class="mentor-top"></div>
+
+            <div class="mentor-content">
+
+                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="mentor" />
+
+                <h3>Akshitha</h3>
+
+                <p class="mentor-skill">
+                    Spring Boot Expert
+                </p>
+
+                <div class="mentor-rating">
+                    <i class="fa-solid fa-star"></i> 4.9
+                </div>
+
+                <button class="view-btn">
+                    View Profile
+                </button>
+
+            </div>
+
         </div>
 
         <div class="mentor-card">
-            <img src="assets/images/profile2.jpg" alt="mentor" />
-            <h3>Rahul</h3>
-            <p>React Developer</p>
-            <span>⭐ 4.8</span>
-            <a href="pages/profile.html">View Profile</a>
+
+            <div class="mentor-top"></div>
+
+            <div class="mentor-content">
+
+                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="mentor" />
+
+                <h3>Rahul</h3>
+
+                <p class="mentor-skill">
+                    AIML Expert
+                </p>
+
+                <div class="mentor-rating">
+                    <i class="fa-solid fa-star"></i> 4.9
+                </div>
+
+                <button class="view-btn">
+                    View Profile
+                </button>
+
+            </div>
+
         </div>
 
         <div class="mentor-card">
-            <img src="assets/images/profile3.jpg" alt="mentor" />
-            <h3>Neha</h3>
-            <p>UI/UX Designer</p>
-            <span>⭐ 4.7</span>
-            <a href="pages/profile.html">View Profile</a>
+
+            <div class="mentor-top"></div>
+
+            <div class="mentor-content">
+
+                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="mentor" />
+
+                <h3>Karthik</h3>
+
+                <p class="mentor-skill">
+                    Album Designing Expert
+                </p>
+
+                <div class="mentor-rating">
+                    <i class="fa-solid fa-star"></i> 4.9
+                </div>
+
+                <button class="view-btn">
+                    View Profile
+                </button>
+
+            </div>
+
         </div>
 
     </div>
+
 </section>
 
 <footer>
@@ -112,7 +179,7 @@
 
     function goToLogin() {
 
-        window.location.href = "./pages/login.html";
+        window.location.href = "login.html";
     }
     function logoutUser(){
     localStorage.removeItem("user");
@@ -135,7 +202,7 @@ function updateNavbar(){
             </span>
 
             <button onclick="
-                window.location.href='pages/dashboard.html'
+                window.location.href='dashboard.html'
             ">
                 Dashboard
             </button>
@@ -183,6 +250,75 @@ function updateNavbar(){
 
     loadSkills();
     updateNavbar();
+
+async function searchSkills(){
+    const keyword=document.getElementById("searchInput").value;
+    if(keyword.trim()===""){
+        alert("Enter a skill");
+        return;
+    }
+    try{
+        const response=await fetch(`http://localhost:9090/skills/search?keyword=${keyword}`);
+        const skills=await response.json();
+        const container=document.getElementById("searchResults");
+        document.getElementById("searchSection").style.display="block";
+        container.scrollIntoView({behavior:"smooth"});
+        container.innerHTML="";
+        if(skills.length===0){
+            container.innerHTML="<h3>No Skills Found</h3>";
+            return;
+        }
+        skills.forEach(skill=>{
+            container.innerHTML+=
+            `<div class="mentor-card">
+            <div class="mentor-top"></div>
+
+            <div class="mentor-content">
+
+                <img
+                    src="
+                        https://cdn-icons-png.flaticon.com/512/3135/3135715.png
+                    "
+                    alt="mentor"
+                />
+
+                <h3>
+                    ${skill.userDTO.name}
+                </h3>
+
+                <p class="mentor-skill">
+                    ${skill.title}
+                </p>
+
+                <div class="mentor-rating">
+                    <i class="fa-solid fa-star"></i> ${skill.userDTO.rating || 0}
+                </div>
+
+                <div class="mentor-level">
+                    ${skill.experienceLevel}
+                </div>
+
+                <button
+                    class="view-btn"
+                    onclick="viewProfile(${skill.userDTO.id})"
+                >
+                    View Profile
+                </button>
+
+            </div>
+
+            `;
+        });
+
+    }catch(error){
+        console.log(error);
+        alert(error);
+    }
+}
+
+function viewProfile(userId){
+    window.location.href=`mentor-profile.html?id=${userId}`;
+}
 
 </script>
 
