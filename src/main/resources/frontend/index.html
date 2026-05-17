@@ -320,6 +320,14 @@ function viewProfile(userId,skillId){
     window.location.href=`skill-profile.html?userId=${userId}&skillId=${skillId}`;
 }
 
+const searchInput=document.getElementById("searchInput");
+searchInput.addEventListener("keydown",function(event){
+    if(event.key==="Enter"){
+        event.preventDefault();
+        searchSkills();
+    }
+});
+
 </script>
 
 </body>

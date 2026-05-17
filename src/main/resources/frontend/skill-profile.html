@@ -53,7 +53,7 @@
         <div class="rating">
             <i class="fa-solid fa-star"></i> <span id="mentorRating"></span>
         </div>
-        <button class="view-btn">
+        <button class="view-btn" onclick="loadSkills()">
             View All skills
         </button>
 
@@ -86,9 +86,47 @@
                     id="skillPrice"
             ></div>
 
-            <button class="book-btn">
-                Book Session
-            </button>
+            <div id="bookingButtonContainer">
+                <button class="book-btn" onclick="openBookingModal()">
+                    Book Session
+                </button>
+
+            </div>
+
+
+        </div>
+
+    </div>
+    <div
+            class="booking-modal"
+            id="bookingModal"
+    >
+
+        <div class="booking-box">
+
+            <h2>Book Session</h2>
+
+            <input
+                    type="datetime-local"
+                    id="sessionDate"
+            />
+
+            <textarea
+                    id="bookingMessage"
+                    placeholder="Add message (optional)"
+            ></textarea>
+
+            <div class="booking-actions">
+
+                <button onclick="closeBookingModal()">
+                    Cancel
+                </button>
+
+                <button onclick="bookSession()">
+                    Confirm Booking
+                </button>
+
+            </div>
 
         </div>
 
@@ -176,8 +214,175 @@
         }
     }
 
+    async function loadSkills(){
+
+    try{
+
+        const response = await fetch(
+            `http://localhost:9090/skills/user/${userId}`
+        );
+
+        const skills = await response.json();
+
+        const skillSection =
+            document.querySelector(".skill-section");
+
+        skillSection.innerHTML = `
+
+            <h2 class="all-skills-heading">
+                All Skills
+            </h2>
+
+            <div id="allSkillsContainer"></div>
+        `;
+
+        const container =
+            document.getElementById("allSkillsContainer");
+
+        skills.forEach(skill => {
+
+            container.innerHTML += `
+
+                <div class="all-skill-card" ondblclick="skillProfile(${skill.userDTO.id},${skill.id})">
+
+                    <img
+                        src="${
+                            skill.thumbnail ||
+                            'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'
+                        }"
+                        alt="skill"
+                    >
+
+                    <div class="all-skill-content">
+
+                        <h3>
+                            ${skill.title}
+                        </h3>
+
+                        <p>
+                            ${skill.description}
+                        </p>
+
+                        <div class="all-skill-meta">
+
+                            <span>
+                                ${skill.category}
+                            </span>
+
+                            <span>
+                                ${skill.experienceLevel}
+                            </span>
+
+                            <span>
+                                ₹ ${skill.price}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            `;
+        });
+
+        skillSection.scrollIntoView({
+            behavior:"smooth"
+        });
+
+    }
+    catch(error){
+
+        console.log(error);
+
+        alert("Failed to load skills");
+    }
+}
+function skillProfile(userId,skillId){
+window.location.href=`skill-profile.html?userId=${userId}&skillId=${skillId}`;
+}
     loadProfile();
 
+function openBookingModal(){
+    document.getElementById("bookingModal")
+    .style.display="flex";
+}
+
+function closeBookingModal(){
+    document.getElementById("bookingModal")
+    .style.display="none";
+}
+
+async function bookSession(){
+    const user=JSON.parse(localStorage.getItem("user"));
+    if(!user){
+        alert("Please login first");
+        return;
+    }
+    const sessionDate=document.getElementById("sessionDate").value;
+    const message=document.getElementById("bookingMessage").value;
+    if(sessionDate===""){
+        alert("Select session date");
+        return;
+    }
+    try{
+        const bookingData={
+            mentorId:userId,
+            studentId:user.id,
+            skillId:skillId,
+            sessionDate:sessionDate,
+            message:message
+        };
+        const response=await fetch(
+            "http://localhost:9090/bookings",
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify(bookingData)
+            }
+        );
+        if(response.ok){
+            const booking=await response.json();
+            alert("Session booked successfully");
+            closeBookingModal();
+            updateBookingUI(booking.id);
+        }
+        else{
+            alert("Booking failed");
+        }
+    }
+    catch(error){
+        console.log(error);
+        alert("Something went wrong");
+    }
+}
+    function updateBookingUI(bookingId){
+    const container=document.getElementById("bookingButtonContainer");
+     container.innerHTML = `
+
+    <div class="booking-buttons">
+        <button
+            class="booked-btn"
+            disabled
+        >
+            Session Booked
+        </button>
+
+        <button
+            class="details-btn"
+            onclick="viewBooking(${bookingId})"
+        >
+            View Booking
+        </button>
+    </div>
+    `;
+}
+function viewBooking(bookingId){
+
+    window.location.href =
+        `booking-details.html?bookingId=${bookingId}`;
+}
 </script>
 
 </body>

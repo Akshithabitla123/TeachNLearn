@@ -313,3 +313,320 @@ body{
         padding:14px;
     }
 }
+
+/* ALL SKILLS */
+
+.all-skills-heading{
+    font-size:34px;
+    margin-bottom:30px;
+    color:#0f172a;
+}
+
+/* CONTAINER */
+
+#allSkillsContainer{
+    display:flex;
+    flex-direction:column;
+    gap:24px;
+}
+
+/* CARD */
+
+.all-skill-card{
+    background:white;
+
+    border-radius:24px;
+
+    padding:22px;
+
+    display:flex;
+
+    gap:22px;
+
+    align-items:center;
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,0.05);
+
+    transition:0.3s;
+}
+
+.all-skill-card:hover{
+    transform:translateY(-4px);
+}
+
+/* IMAGE */
+
+.all-skill-card img{
+    width:130px;
+    height:130px;
+
+    border-radius:18px;
+
+    object-fit:cover;
+}
+
+/* CONTENT */
+
+.all-skill-content{
+    flex:1;
+}
+
+.all-skill-content h3{
+    font-size:26px;
+    color:#4f46e5;
+    margin-bottom:10px;
+}
+
+.all-skill-content p{
+    color:#64748b;
+    line-height:1.7;
+    margin-bottom:16px;
+    font-size:15px;
+}
+
+/* META */
+
+.all-skill-meta{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+.all-skill-meta span{
+    background:#eef2ff;
+    color:#4f46e5;
+
+    padding:8px 14px;
+
+    border-radius:10px;
+
+    font-size:14px;
+    font-weight:600;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:768px){
+
+    .all-skill-card{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .all-skill-card img{
+        width:100%;
+        height:220px;
+    }
+
+    .all-skill-content h3{
+        font-size:22px;
+    }
+}
+
+/* BOOKING MODAL */
+
+.booking-modal{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,0.5);
+
+    display:none;
+
+    justify-content:center;
+
+    align-items:center;
+
+    z-index:2000;
+}
+
+.booking-box{
+
+    width:420px;
+
+    background:white;
+
+    border-radius:24px;
+
+    padding:35px;
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,0.2);
+
+    animation:popup 0.3s ease;
+}
+
+@keyframes popup{
+
+    from{
+        transform:scale(0.8);
+        opacity:0;
+    }
+
+    to{
+        transform:scale(1);
+        opacity:1;
+    }
+}
+
+.booking-box h2{
+
+    margin-bottom:25px;
+
+    font-size:30px;
+
+    color:#0f172a;
+}
+
+.booking-box input,
+.booking-box textarea{
+
+    width:100%;
+
+    padding:16px;
+
+    border-radius:14px;
+
+    border:1px solid #cbd5e1;
+
+    margin-bottom:20px;
+
+    outline:none;
+
+    font-size:15px;
+}
+
+.booking-box textarea{
+
+    height:120px;
+
+    resize:none;
+}
+
+.booking-actions{
+
+    display:flex;
+
+    gap:15px;
+}
+
+.booking-actions button{
+
+    flex:1;
+
+    padding:15px;
+
+    border:none;
+
+    border-radius:14px;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    font-weight:600;
+}
+
+.booking-actions button:first-child{
+
+    background:#e2e8f0;
+}
+
+.booking-actions button:last-child{
+
+    background:
+        linear-gradient(
+            135deg,
+            #4f46e5,
+            #7c3aed
+        );
+
+    color:white;
+}
+
+/* BUTTON CONTAINER */
+
+.booking-buttons{
+
+    display:flex;
+
+    gap:18px;
+
+    margin-top:35px;
+}
+
+/* SESSION BOOKED */
+
+.booked-btn{
+
+    flex:1;
+
+    padding:18px 20px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:linear-gradient(
+                           135deg,
+                           #4f46e5,
+                           #7c3aed
+                       );
+
+    color:white;
+
+
+    font-weight:700;
+
+    cursor:not-allowed;
+}
+
+/* VIEW DETAILS */
+
+.details-btn{
+
+    flex:1;
+
+    padding:18px 20px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:
+        linear-gradient(
+                    135deg,
+                    #4f46e5,
+                    #7c3aed
+                );
+
+    color:white;
+
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:0.3s;
+}
+
+.details-btn:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:
+        0 10px 25px rgba(15,23,42,0.25);
+}
+
+/* MOBILE */
+
+@media(max-width:700px){
+
+    .booking-buttons{
+
+        flex-direction:column;
+    }
+}
