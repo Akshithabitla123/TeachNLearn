@@ -264,11 +264,18 @@ async function searchSkills(){
         document.getElementById("searchSection").style.display="block";
         container.scrollIntoView({behavior:"smooth"});
         container.innerHTML="";
-        if(skills.length===0){
-            container.innerHTML="<h3>No Skills Found</h3>";
+        const user=JSON.parse(localStorage.getItem("user"));
+        const filteredSkills=skills.filter(skill=>{
+            if(!user){
+                return true;
+            }
+            return skill.userDTO.id!=user.id;
+        });
+        if(filteredSkills.length===0){
+            container.innerHTML="<h3>No Mentors Found</h3>";
             return;
         }
-        skills.forEach(skill=>{
+        filteredSkills.forEach(skill=>{
             container.innerHTML+=
             `<div class="mentor-card">
             <div class="mentor-top"></div>
@@ -317,6 +324,12 @@ async function searchSkills(){
 }
 
 function viewProfile(userId,skillId){
+    const user=localStorage.getItem("user");
+    if(!user){
+        alert("Please login to view the profile");
+        window.location.href="login.html";
+        return;
+    }
     window.location.href=`skill-profile.html?userId=${userId}&skillId=${skillId}`;
 }
 

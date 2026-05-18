@@ -1111,3 +1111,138 @@ footer{
         max-width:100%;
     }
 }
+
+//my bookings
+.booking-wrapper{
+
+    padding:20px;
+}
+
+.booking-wrapper h2{
+
+    margin-bottom:25px;
+
+    font-size:32px;
+
+    color:#1e293b;
+}
+
+#bookingsContainer{
+
+    display:grid;
+    grid-template-columns:
+    repeat(
+    auto-fit,
+    minmax(320px,1fr)
+    );
+
+    gap:10px;
+}
+
+.booking-card{
+
+    background:white;
+
+    padding:24px;
+    border-radius:20px;
+
+    box-shadow:
+    0 10px 30px
+    rgba(
+    79,
+    70,
+    229,
+    0.08
+    );
+}
+
+.booking-top{
+
+    display:flex;
+
+    justify-content:
+    space-between;
+
+    margin-bottom:18px;
+}
+
+.booking-top h3{
+
+    color:#4f46e5;
+
+    font-size:22px;
+}
+
+.booking-status{
+
+    padding:8px 14px;
+
+    background:#eef2ff;
+
+    color:#4f46e5;
+
+    border-radius:12px;
+
+    font-size:14px;
+
+    font-weight:700;
+}
+
+.booking-card p{
+
+    margin-bottom:12px;
+
+    color:#475569;
+
+    font-size:15px;
+}
+.action-buttons{
+
+    display:flex;
+
+    gap:10px;
+}
+
+.accept-btn{
+
+    background:#22c55e;
+
+    color:white;
+
+    border:none;
+
+    padding:10px 16px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-weight:600;
+}
+
+.reject-btn{
+
+    background:#ef4444;
+
+    color:white;
+
+    border:none;
+
+    padding:10px 16px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-weight:600;
+}
+
+.accept-btn:hover{
+
+    opacity:0.9;
+}
+
+.reject-btn:hover{
+
+    opacity:0.9;
+}

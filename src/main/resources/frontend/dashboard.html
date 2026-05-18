@@ -26,11 +26,17 @@
             <li onclick="showSection('profileSection')">
                 Update Profile
             </li>
+            <li onclick="showSection('addSkillSection')">
+                Add Skill
+            </li>
             <li onclick="showSection('skillsSection')">
                 My Skills
             </li>
-            <li onclick="showSection('addSkillSection')">
-                Add Skill
+            <li onclick="showSection('myBookings')">
+                My Bookings
+            </li>
+            <li onclick="showSection('mySessions')">
+                My Sessions
             </li>
             <li onclick="logoutUser()">
                 Logout
@@ -151,23 +157,6 @@
             </div>
 
         </section>
-
-        <section id="skillsSection"
-                 style="display:none;">
-
-            <div class="my-skills">
-
-                <h2>My Skills</h2>
-
-                <div id="mySkillsContainer">
-
-                </div>
-
-            </div>
-
-        </section>
-
-
         <section id="addSkillSection"
                  style="display:none;">
 
@@ -218,6 +207,35 @@
             </div>
 
         </section>
+        <section id="skillsSection"
+                 style="display:none;">
+
+            <div class="my-skills">
+
+                <h2>My Skills</h2>
+
+                <div id="mySkillsContainer">
+
+                </div>
+
+            </div>
+
+        </section>
+        <section id="myBookings" style="display:none">
+            <div class="booking-wrapper">
+                <h2>My Bookings</h2>
+                <div id="bookingsContainer"></div>
+            </div>
+        </section>
+        <section id="mySessions" style="display:none">
+            <div class="sessions-wrapper">
+                <h2>My Sessions</h2>
+                <div id="sessionsContainer"></div>
+            </div>
+        </section>
+
+
+
 
     </main>
 
@@ -285,9 +303,17 @@ document.getElementById("userVerified")
 
         document.getElementById("addSkillSection")
             .style.display = "none";
+        document.getElementById("myBookings").style.display = "none";
+        document.getElementById("mySessions").style.display = "none";
 
         document.getElementById(sectionId)
             .style.display = "block";
+        if(sectionId==="myBookings"){
+            loadBookings()
+        }
+        if(sectionId==="mySessions"){
+            loadSessions()
+        }
     }
 
     // LOGOUT
@@ -299,7 +325,7 @@ document.getElementById("userVerified")
         window.location.href = "index.html";
     }
 
-    // UPDATE PROFILE
+<!--    UPDATE PROFILE-->
 
     async function updateProfile() {
 
@@ -359,7 +385,7 @@ document.getElementById("userVerified")
         }
     }
 
-    // ADD SKILL
+<!--    ADD SKILL-->
 
     async function addSkill() {
 
@@ -457,9 +483,7 @@ document.getElementById("userVerified")
         }
     }
 
-    // INITIAL LOAD
 
-    loadMySkills();
 
     //load summary of the user
     async function loadSummary(){
@@ -475,6 +499,133 @@ document.getElementById("userVerified")
             console.log(error);
         }
     }
+    async function loadBookings(){
+    try{
+        const response=await fetch(`http://localhost:9090/bookings/student/${user.id}`);
+        const bookings=await response.json();
+        const container=document.getElementById("bookingsContainer");
+        container.innerHTML="";
+
+        if(bookings.length===0){
+            container.innerHTML=`<h3>No bookings yet</h3>`;
+            return;
+        }
+        bookings.forEach(booking=>{
+            container.innerHTML +=
+            ` <div class="booking-card">
+                <div class="booking-top">
+                    <h3> ${booking.skill.title} </h3>
+                    <span class="booking-status"> ${booking.status}</span>
+                </div>
+                <p> Mentor :
+                    ${booking.mentor.name}
+                </p>
+                <p>
+                    Session :
+                    ${booking.sessionDate}
+                </p>
+                <p>
+                    Message :
+                    ${ booking.message ||"Nothing to show"}
+                </p>
+            </div>
+            `;
+        });
+    }
+
+    catch(error){
+
+        console.log(error);
+
+        alert(
+            "Failed to load bookings"
+        );
+    }
+}
+
+async function loadSessions(){
+    try{
+        const response=await fetch(`http://localhost:9090/bookings/mentor/${user.id}`);
+        const sessions=await response.json();
+        const container=document.getElementById("sessionsContainer");
+        container.innerHTML="";
+
+        if(sessions.length===0){
+            container.innerHTML=`<h3>No Booked sessions yet</h3>`;
+            return;
+        }
+        sessions.forEach(session=>{
+            container.innerHTML +=`
+                <div class="booking-card">
+                <div class="booking-top">
+                    <h3>
+                        ${session.skill.title}
+                    </h3>
+                     ${
+            session.status==="PENDING"?
+            `<div class="action-buttons">
+                <button
+                class="accept-btn"
+                onclick="
+                updateBookingStatus(
+                ${session.id},
+                'ACCEPTED'
+                )">
+                Accept
+                </button>
+                <button
+                class="reject-btn"
+                onclick="
+                updateBookingStatus(
+                ${session.id},
+                'REJECTED'
+                )">
+                Reject
+                </button>
+            </div>`
+            :
+            `<span class="booking-status">
+                ${session.status}
+            </span>`
+        }
+        </div>
+        <p>
+            Student:
+            ${session.student.name}
+        </p>
+        <p> Session :${session.sessionDate}</>p>
+        <p>
+            Message :
+            ${session.message || "No message to show"}
+        </p>
+    </div>
+       `;
+        });
+    }
+    catch(error){
+        console.log(error);
+        alert("Failed to load sessions");
+    }
+}
+
+    async function updateBookingStatus(bookingId,status){
+    try {
+        const response=await fetch(`http://localhost:9090/bookings/${bookingId}/status?userId=${user.id}&status=${status}`,
+            {
+                method:"PUT"
+            }
+        );
+        if(!response.ok){
+            throw new Error("Update failed");
+        }
+        loadSessions();
+    } catch (error) {
+        console.log(error);
+        alert("Failed to update Status");
+    }
+
+}
+    loadMySkills();
     loadSummary();
 
 </script>

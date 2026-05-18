@@ -131,10 +131,43 @@
         </div>
 
     </div>
+    <div
+            class="booking-popup"
+            id="bookingPopup"
+    >
+
+        <div class="booking-popup-box">
+
+            <div class="popup-header">
+
+                <h2>
+                    Booking Details
+                </h2>
+
+                <button
+                        onclick="closeBookingPopup()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+            <div id="bookingDetails">
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
 <script>
+    const user=JSON.parse(localStorage.getItem("user"));
+    if(!user){
+        alert("Login required");
+        window.location.href="login.html";
+    }
 
     const params =
         new URLSearchParams(window.location.search);
@@ -300,7 +333,7 @@
 function skillProfile(userId,skillId){
 window.location.href=`skill-profile.html?userId=${userId}&skillId=${skillId}`;
 }
-    loadProfile();
+
 
 function openBookingModal(){
     document.getElementById("bookingModal")
@@ -378,11 +411,92 @@ async function bookSession(){
     </div>
     `;
 }
-function viewBooking(bookingId){
+async function viewBooking(bookingId){
+    try {
+        const response=await fetch(`http://localhost:9090/bookings/${bookingId}`);
+        const booking=await response.json();
+         document.getElementById(
+        "bookingDetails"
+        ).innerHTML = `
 
-    window.location.href =
-        `booking-details.html?bookingId=${bookingId}`;
+        <div class="detail-row">
+            <span>Student</span>
+            <p>${booking.student.name}</p>
+        </div>
+
+        <div class="detail-row">
+            <span>Mentor</span>
+            <p>${booking.mentor.name}</p>
+        </div>
+
+        <div class="detail-row">
+            <span>Skill</span>
+            <p>${booking.skill.title}</p>
+        </div>
+
+        <div class="detail-row">
+            <span>Date</span>
+            <p>${booking.sessionDate}</p>
+        </div>
+
+        <div class="detail-row">
+            <span>Status</span>
+            <p class="status">
+                ${booking.status}
+            </p>
+        </div>
+
+        <div class="detail-row">
+            <span>Message</span>
+            <p>
+            ${
+                booking.message ||
+                "No message"
+            }
+            </p>
+        </div>
+
+        `;
+
+        document.getElementById(
+        "bookingPopup"
+        ).style.display="flex";
+    } catch (error) {
+        console.log(error);
+        alert("Failed to load booking");
+    }
+
 }
+
+async function checkBookingStatus(){
+    const user=JSON.parse(localStorage.getItem("user"));
+    if(!user){
+        return;
+    }
+    try{
+        const response=await fetch(`http://localhost:9090/bookings/check?studentId=${user.id}&skillId=${skillId}`);
+        if(!response.ok){
+            return;
+        }
+        const booking=await response.json();
+        if(booking && booking.id){
+            updateBookingUI(booking.id);
+        }
+    }catch(error){
+        console.log(error);
+    }
+}
+function closeBookingPopup(){
+    document.getElementById("bookingPopup").style.display="none";
+}
+async function initialize(){
+
+    await loadProfile();
+    await checkBookingStatus();
+}
+initialize()
+
+
 </script>
 
 </body>

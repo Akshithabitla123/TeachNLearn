@@ -22,12 +22,12 @@ public class BookingController {
     }
     //get bookings of mentor
     @GetMapping("/mentor/{mentorId}")
-    public List<BookingDTO> getMentorBookings(@PathVariable Long mentorId){
+    public List<Booking> getMentorBookings(@PathVariable Long mentorId){
         return bookingService.getMentorBookings(mentorId);
     }
     //get bookings of student
     @GetMapping("/student/{studentId}")
-    public List<BookingDTO> getStudentBookings(@PathVariable Long studentId){
+    public List<Booking> getStudentBookings(@PathVariable Long studentId){
         return bookingService.getStudentBookings(studentId);
     }
     //get details of that booking
@@ -44,5 +44,10 @@ public class BookingController {
     @PutMapping("/{bookingId}/complete")
     public Booking markCompleted(@PathVariable Long bookingId, @RequestParam Long userId){
         return bookingService.markCompleted(bookingId,userId);
+    }
+    //get existing booking of user
+    @GetMapping("/check")
+    public Booking checkBooking(@RequestParam Long studentId,@RequestParam Long skillId){
+        return bookingService.getExistingBooking(studentId, skillId);
     }
 }

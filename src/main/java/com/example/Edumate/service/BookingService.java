@@ -44,11 +44,11 @@ public class BookingService {
         return bookingRepo.save(booking);
     }
     //get bookings for mentor
-    public List<BookingDTO> getMentorBookings(Long mentorId){
+    public List<Booking> getMentorBookings(Long mentorId){
         return bookingRepo.findByMentorId(mentorId);
     }
     //get bookings by a student
-    public List<BookingDTO> getStudentBookings(Long studentId){
+    public List<Booking> getStudentBookings(Long studentId){
         return bookingRepo.findByStudentId(studentId);
     }
     //update the status of the session
@@ -91,6 +91,11 @@ public class BookingService {
     public Booking getBookingById(Long bookingId){
         return bookingRepo.findById(bookingId)
                 .orElseThrow(()->new RuntimeException("Booking not found"));
+    }
+
+    //get existing booking of user
+    public Booking getExistingBooking(Long studentId,Long skillId){
+        return bookingRepo.findByStudentIdAndSkillId(studentId, skillId).orElse(null);
     }
 
 }

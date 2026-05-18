@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface BookingRepo extends JpaRepository<Booking,Long> {
-    List<BookingDTO> findByMentorId(Long mentorId);
-    List<BookingDTO> findByStudentId(Long studentId);
+    List<Booking> findByMentorId(Long mentorId);
+    List<Booking> findByStudentId(Long studentId);
     Optional<Booking> findByStudentIdAndSkillId(Long studentId,Long skillId);
 }

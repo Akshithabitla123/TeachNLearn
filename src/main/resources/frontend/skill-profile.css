@@ -630,3 +630,132 @@ body{
         flex-direction:column;
     }
 }
+
+.booking-popup{
+
+    display:none;
+
+    position:fixed;
+    inset:0;
+
+    background:
+    rgba(0,0,0,0.5);
+
+    justify-content:center;
+
+    align-items:center;
+
+    z-index:999;
+}
+.booking-popup-box{
+
+    width:460px;
+    max-width:90%;
+
+    background:white;
+
+    border-radius:20px;
+
+    padding:20px;
+
+    box-shadow:
+    0 15px 40px
+    rgba(0,0,0,0.12);
+
+    animation:
+    popupShow 0.3s ease;
+
+    max-height:85vh;
+
+    overflow-y:auto;
+}
+
+.popup-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:16px;
+}
+
+.popup-header h2{
+
+    font-size:24px;
+
+    margin:0;
+
+    color:#111827;
+}
+
+.popup-header button{
+
+    border:none;
+
+    background:none;
+
+    font-size:22px;
+
+    cursor:pointer;
+}
+
+.detail-row{
+
+    margin-bottom:10px;
+
+    padding:10px 14px;
+
+    background:#f8fafc;
+
+    border-radius:12px;
+}
+
+.detail-row span{
+
+    display:block;
+
+    color:#6366f1;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    margin-bottom:4px;
+}
+
+.detail-row p{
+
+    margin:0;
+
+    font-size:16px;
+
+    color:#1e293b;
+}
+
+.status{
+
+    font-size:16px;
+
+    font-weight:700;
+}
+
+@keyframes popupShow{
+
+from{
+
+transform:
+translateY(20px);
+
+opacity:0;
+}
+
+to{
+
+transform:
+translateY(0);
+
+opacity:1;
+}
+}
