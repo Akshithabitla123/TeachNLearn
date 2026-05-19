@@ -1,19 +1,17 @@
 package com.example.Edumate.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.example.Edumate.dto.AdminLoginDTO;
 import com.example.Edumate.dto.UserDTO;
 import com.example.Edumate.model.Admin;
 import com.example.Edumate.model.User;
 import com.example.Edumate.repository.AdminRepo;
 import com.example.Edumate.repository.UserRepo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.w3c.dom.stylesheets.LinkStyle;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 public class AdminService {
     @Autowired

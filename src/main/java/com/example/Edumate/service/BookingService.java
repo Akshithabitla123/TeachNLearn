@@ -1,5 +1,11 @@
 package com.example.Edumate.service;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.example.Edumate.Enum.Status;
 import com.example.Edumate.dto.BookingDTO;
 import com.example.Edumate.model.Booking;
@@ -8,11 +14,6 @@ import com.example.Edumate.model.User;
 import com.example.Edumate.repository.BookingRepo;
 import com.example.Edumate.repository.SkillRepo;
 import com.example.Edumate.repository.UserRepo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BookingService {
@@ -58,7 +59,6 @@ public class BookingService {
         Booking booking=bookingRepo.findById(bookingId)
                 .orElseThrow(()->new RuntimeException("Booking not found"));
         Long mentorId=booking.getMentor().getId();
-        Long studentId=booking.getStudent().getId();
         //accept or reject only by mentor
         if(status==Status.ACCEPTED || status==Status.REJECTED){
             if(!mentorId.equals(userId)){

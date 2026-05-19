@@ -1,4 +1,3 @@
-<script>
 async function loginUser() {
 
     const email = document.getElementById("email").value;
@@ -20,13 +19,10 @@ async function loginUser() {
     if(response.ok) {
         alert("Login successful");
 
-        // store user locally
         localStorage.setItem("user", JSON.stringify(data));
 
-        // redirect to home
         window.location.href = "index.html";
     } else {
         alert(data.message || "Login failed");
     }
 }
-</script>

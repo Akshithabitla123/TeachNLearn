@@ -1,7 +1,5 @@
 package com.example.Edumate.dto;
 
-import jakarta.persistence.Column;
-
 public class SkillResponseDTO {
     private Long id;
     private String title;

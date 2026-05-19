@@ -1,12 +1,11 @@
 package com.example.Edumate.repository;
+import java.util.List;
+import java.util.Optional;
 
-import com.example.Edumate.dto.BookingDTO;
-import com.example.Edumate.model.Booking;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
+import com.example.Edumate.model.Booking;
 
 @Repository
 public interface BookingRepo extends JpaRepository<Booking,Long> {
