@@ -7,6 +7,5 @@ import com.example.Edumate.model.RescheduleRequest;
 
 @Repository
 public interface RescheduleReqRepo extends JpaRepository<RescheduleRequest,Long>{
-
     
 }

@@ -23,6 +23,8 @@ public class BookingService {
     private UserRepo userRepo;
     @Autowired
     private SkillRepo skillRepo;
+    @Autowired
+    private RescheduleReqService service;
     //create booking
     public Booking createBooking(BookingDTO dto){
         User student=userRepo.findById(dto.getStudentId()).
@@ -60,11 +62,18 @@ public class BookingService {
                 .orElseThrow(()->new RuntimeException("Booking not found"));
         Long mentorId=booking.getMentor().getId();
         //accept or reject only by mentor
-        if(status==Status.ACCEPTED || status==Status.REJECTED){
+        if(status==Status.ACCEPTED){
             if(!mentorId.equals(userId)){
                 throw new RuntimeException("Only mentor can accept/reject");
             }
             booking.setStatus(status);
+        }
+        else if(status==Status.REJECTED){
+            if(!mentorId.equals(userId)){
+                throw new RuntimeException("Only mentor can accept/reject");
+            }
+            
+            service.createRequest(bookingId);
         }
         return bookingRepo.save(booking);
     }
