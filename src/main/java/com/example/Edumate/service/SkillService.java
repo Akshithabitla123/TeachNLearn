@@ -45,7 +45,6 @@ public class SkillService {
                 skill.getExperienceLevel(),
                 skill.getPrice(),
                 skill.isVerified(),
-                skill.getThumbnail(),
                 userDTO
         );
     }

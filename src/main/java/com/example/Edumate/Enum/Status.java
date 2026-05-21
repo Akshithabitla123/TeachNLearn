@@ -5,6 +5,6 @@ public enum Status {
     ACCEPTED,
     REJECTED,
     COMPLETED,
-    RESHEDULE_REQUESTED,//mentor suggested new slots
-    RESHEDULED//student selected a slot
+    RESCHEDULE_REQUESTED,//mentor suggested new slots
+    RESCHEDULED//student selected a slot
 }

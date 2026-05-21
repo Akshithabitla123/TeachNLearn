@@ -8,10 +8,9 @@ public class SkillResponseDTO {
     private String experienceLevel;
     private Double price;
     private boolean verified;
-    private String thumbnail;
     private UserDTO userDTO;
 
-    public SkillResponseDTO(Long id, String title, String description, String category, String experienceLevel, Double price, boolean verified, String thumbnail, UserDTO userDTO) {
+    public SkillResponseDTO(Long id, String title, String description, String category, String experienceLevel, Double price, boolean verified, UserDTO userDTO) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -19,7 +18,6 @@ public class SkillResponseDTO {
         this.experienceLevel = experienceLevel;
         this.price = price;
         this.verified = verified;
-        this.thumbnail = thumbnail;
         this.userDTO = userDTO;
     }
 
@@ -78,19 +76,9 @@ public class SkillResponseDTO {
     public void setVerified(boolean verified) {
         this.verified = verified;
     }
-
-    public String getThumbnail() {
-        return thumbnail;
-    }
-
-    public void setThumbnail(String thumbnail) {
-        this.thumbnail = thumbnail;
-    }
-
     public UserDTO getUserDTO() {
         return userDTO;
     }
-
     public void setUserDTO(UserDTO userDTO) {
         this.userDTO = userDTO;
     }

@@ -73,6 +73,9 @@ public class BookingService {
                 throw new RuntimeException("Only mentor can accept/reject");
             }
             
+            booking.setStatus(status);
+        }
+        else if(status==Status.RESCHEDULE_REQUESTED){
             service.createRequest(bookingId);
         }
         return bookingRepo.save(booking);

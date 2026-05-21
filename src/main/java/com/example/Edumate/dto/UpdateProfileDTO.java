@@ -6,6 +6,9 @@ public class UpdateProfileDTO {
     private String github;
     private String profileImage;
 
+    public UpdateProfileDTO(){
+        
+    }
     public UpdateProfileDTO(String bio, String linkedIn, String github, String profileImage) {
         this.bio = bio;
         this.linkedIn = linkedIn;

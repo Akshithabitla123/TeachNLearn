@@ -144,11 +144,8 @@
                         id="github"
                         placeholder="GitHub Profile">
 
-                <input
-                        type="text"
-                        id="profileImage"
-                        placeholder="Profile Image URL"
-                >
+                <input type="file" id="profileImage"  accept="image/*"
+                />
 
                 <button onclick="updateProfile()">
                     Save Profile
@@ -194,12 +191,6 @@
                         placeholder="Price"
                 >
 
-                <input
-                        type="text"
-                        id="thumbnail"
-                        placeholder="Thumbnail URL"
-                >
-
                 <button onclick="addSkill()">
                     Upload Skill
                 </button>
@@ -234,6 +225,47 @@
             </div>
         </section>
 
+                <div id="rescheduleOverlay" class="overlay">
+
+    <div class="reschedule-modal">
+
+        <h2>Suggest New Slots</h2>
+
+        <input
+        type="datetime-local"
+        id="slot1">
+
+        <input
+        type="datetime-local"
+        id="slot2">
+
+        <input
+        type="datetime-local"
+        id="slot3">
+
+        <div class="modal-buttons">
+
+            <button
+            class="send-btn" type="button"
+            onclick="sendReschedule()">
+
+                Send
+
+            </button>
+
+            <button
+            class="close-btn" type="button"
+            onclick="closeReschedule()">
+
+                Cancel
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 
 
 
@@ -329,62 +361,61 @@ document.getElementById("userVerified")
 
     async function updateProfile() {
 
-        const bio =
-            document.getElementById("bio").value;
+    const bio = document.getElementById("bio").value;
+    const linkedIn = document.getElementById("linkedin").value;
+    const github = document.getElementById("github").value;
 
-        const linkedIn =
-            document.getElementById("linkedin").value;
+    const fileInput = document.getElementById("profileImage");
+    const file = fileInput.files[0];
 
-        const github =
-            document.getElementById("github").value;
+    let imageUrl = null;
 
-        const profileImage =
-            document.getElementById("profileImage").value;
+    try {
+        if (file) {
+            const formData = new FormData();
+            formData.append("image", file);
+            const uploadRes = await fetch("http://localhost:9090/users/upload-image", {
+                method: "POST",
+                body: formData
+            });
+            imageUrl = await uploadRes.text();
+        }
+        const response = await fetch(
+            `http://localhost:9090/users/profile/${user.id}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    bio,
+                    linkedIn,
+                    github,
+                    profileImage: imageUrl
+                })
+            }
+        );
 
-        try {
+        const data = await response.json();
 
-            const response = await fetch(
-                `http://localhost:9090/users/profile/${user.id}`,
-                {
-                    method: "PUT",
+        if (response.ok) {
 
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        bio,
-                        linkedIn,
-                        github,
-                        profileImage
-                    })
-                }
-            );
-
-            const data = await response.json();
-
-            if(response.ok) {
-
-                localStorage.setItem(
-                    "user",
-                    JSON.stringify(data)
-                );
-
-                alert("Profile Updated");
-
-            } else {
-
-                alert("Update Failed");
+            localStorage.setItem("user", JSON.stringify(data));
+            if (imageUrl) {
+                document.getElementById("profileImageDisplay").src = imageUrl;
             }
 
-        } catch(error) {
+            alert("Profile Updated");
 
-            console.log(error);
-
-            alert("Server Error");
+        } else {
+            alert("Update Failed");
         }
-    }
 
+    } catch (error) {
+        console.log(error);
+        alert("Server Error");
+    }
+}
     // ADD SKILL
 
     async function addSkill() {
@@ -404,9 +435,6 @@ document.getElementById("userVerified")
         const price =
             document.getElementById("price").value;
 
-        const thumbnail =
-            document.getElementById("thumbnail").value;
-
         try {
 
             const response = await fetch(
@@ -423,8 +451,7 @@ document.getElementById("userVerified")
                         description,
                         category,
                         experienceLevel,
-                        price,
-                        thumbnail
+                        price
                     })
                 }
             );
@@ -515,7 +542,19 @@ document.getElementById("userVerified")
             ` <div class="booking-card">
                 <div class="booking-top">
                     <h3> ${booking.skill.title} </h3>
-                    <span class="booking-status"> ${booking.status}</span>
+                    ${
+                    booking.status==="RESCHEDULE_REQUESTED"?
+                    `
+                    <div class="reschedule-section">
+
+                    <button onclick="loadRescheduleSlots(${booking.id})">
+                    View Proposed Slots
+                    </button>
+                    <div id="rescheduleSlotsContainer-${booking.id}"></div>
+                    </div>
+                    `:
+                    `<span class="booking-status"> ${booking.status}</span>`
+                    }
                 </div>
                 <p> Mentor :
                     ${booking.mentor.name}
@@ -542,7 +581,7 @@ document.getElementById("userVerified")
         );
     }
 }
-
+//load sessions (mentoring)
 async function loadSessions(){
     try{
         const response=await fetch(`http://localhost:9090/bookings/mentor/${user.id}`);
@@ -581,6 +620,14 @@ async function loadSessions(){
                 'REJECTED'
                 )">
                 Reject
+                </button>
+                <button
+                class="reschedule-btn"
+                onclick="
+                openReschedule(
+                ${session.id}
+                )">
+                Reschedule
                 </button>
             </div>`
             :
@@ -623,12 +670,90 @@ async function loadSessions(){
         console.log(error);
         alert("Failed to update Status");
     }
-
 }
-    loadMySkills();
-    loadSummary();
+let selectedBookingId=null;
+async function openReschedule(bookingId){
+    selectedBookingId=bookingId;
+    await fetch(`http://localhost:9090/reschedule/create/${bookingId}`,
+        {
+            method:"POST"
+        });
+    document.getElementById("rescheduleOverlay").style.display="flex";
+}
+async function sendReschedule(){
+    const s1=document.getElementById("slot1").value+":00";
+    const s2=document.getElementById("slot2").value+":00";
+    const s3=document.getElementById("slot3").value+":00";
+    console.log(s1,s2,s3);
+    try {
+        const response=await fetch(`http://localhost:9090/reschedule/propose/${selectedBookingId}?slot1=${encodeURIComponent(s1)}&slot2=${encodeURIComponent(s2)}&slot3=${encodeURIComponent(s3)}`,
+        {
+           method:"PUT"
+        }
+        );
+        if(!response.ok){
+            throw new Error("Failed");
+        }
+        await updateBookingStatus(selectedBookingId,"RESCHEDULE_REQUESTED");
+        alert("Reschedule request sent");
+        closeReschedule();
+        loadSessions();
+                
+    } catch (error) {
+        console.log(error);
+        alert("Cannot be rescheduled");
+    }
+}
+
+function closeReschedule(){
+document.getElementById("rescheduleOverlay").style.display="none";
+}
+loadMySkills();
+loadSummary();
+
+async function loadRescheduleSlots(bookingId){
+    try{
+        const response=await fetch(`http://localhost:9090/reschedule/slots/${bookingId}`);
+        const request=await response.json();
+        const container=document.getElementById(`rescheduleSlotsContainer-${bookingId}`);
+        function formatSlot(slot){
+            const date=new Date(slot);
+            const day=String(date.getDate()).padStart(2,"0");
+            const month=String(date.getMonth()+1).padStart(2,"0");
+            const year=date.getFullYear();
+            const hours=String(date.getHours()).padStart(2,"0");
+            const minutes=String(date.getMinutes()).padStart(2,"0");
+            return `${day}/${month}/${year} ${hours}:${minutes}`;
+        }
+        container.innerHTML=`
+        <h5> Accept one of the slots for rescheduling</h5>
+        <button class="slot-btn" onclick="acceptSlot(${bookingId},'${request.slot1}')">${formatSlot(request.slot1)}</button>
+        <button class="slot-btn" onclick="acceptSlot(${bookingId},'${request.slot2}')">${formatSlot(request.slot2)}</button>
+        <button class="slot-btn" onclick="acceptSlot(${bookingId},'${request.slot3}')">${formatSlot(request.slot3)}</button>`;
+    }catch(error){
+        console.log(error);
+        alert("cannot load slots");
+    }
+}
+
+async function acceptSlot(bookingId,slot){
+    try{
+        const response= await fetch(`http://localhost:9090/reschedule/accept/${bookingId}?slot=${encodeURIComponent(slot)}`,
+            {
+                method:"PUT"
+            }
+        );
+        if(!response.ok){
+            throw new Error("Failed");
+        }
+        alert("Reschedule accepted");
+        loadBookings();
+    }catch(error){
+        console.log(error);
+        alert("cannot accept slot");
+    }
+}
 
 </script>
-
 </body>
 </html>

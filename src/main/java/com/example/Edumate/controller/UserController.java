@@ -1,14 +1,29 @@
 package com.example.Edumate.controller;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.Edumate.dto.SummaryDTO;
 import com.example.Edumate.dto.UpdateProfileDTO;
 import com.example.Edumate.dto.UserDTO;
 import com.example.Edumate.model.User;
 import com.example.Edumate.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -38,7 +53,17 @@ public class UserController {
     public void deleteUser(@PathVariable Long id){
         userService.deleteUser(id);
     }
-
+    //uploading profile image
+    @PostMapping("/upload-image")
+    public String uploadImage(@RequestParam("image") MultipartFile file) throws IOException{
+        String originalName = file.getOriginalFilename();
+        String cleanName = originalName.replaceAll("\\s+", "_");
+        String fileName=System.currentTimeMillis()+"_"+cleanName;
+        Path path=Paths.get("uploads/"+fileName);
+        Files.createDirectories(path.getParent());
+        Files.write(path,file.getBytes());
+        return "http://localhost:9090/images/" + fileName;
+    }
     //update profile
     @PutMapping("/profile/{id}")
     public User updateProfile(@PathVariable Long id, @RequestBody UpdateProfileDTO request){
