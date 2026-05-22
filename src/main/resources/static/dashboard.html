@@ -76,7 +76,6 @@
                                target="_blank">
                                 LinkedIn
                             </a>
-
                             <a id="githubLink"
                                target="_blank">
                                 GitHub
@@ -85,13 +84,8 @@
                         </div>
 
                         <div class="profile-bottom">
-
-            <span id="userRating">
-            </span>
-
-                            <span id="userVerified">
-            </span>
-
+                        <span id="userRating"></span>
+                        <span id="userVerified"></span>
                         </div>
 
                     </div>
@@ -225,7 +219,7 @@
             </div>
         </section>
 
-                <div id="rescheduleOverlay" class="overlay">
+    <div id="rescheduleOverlay" class="overlay">
 
     <div class="reschedule-modal">
 
@@ -233,15 +227,15 @@
 
         <input
         type="datetime-local"
-        id="slot1">
+        id="slot1" required>
 
         <input
         type="datetime-local"
-        id="slot2">
+        id="slot2" required>
 
         <input
         type="datetime-local"
-        id="slot3">
+        id="slot3" required>
 
         <div class="modal-buttons">
 
@@ -267,9 +261,19 @@
 
 </div>
 
-
-
-    </main>
+<!-- accepting rescheduled tasks overlay -->
+ <div id="slotPopup" class="overlay">
+    <div class="slot-modal">
+        <h3>Accept one of the slots</h3>
+        <div id="popupSlotsContainer"></div>
+        <button
+        class="close-btn"
+        onclick="closeSlotPopup()">
+            Close
+        </button>
+    </div>
+</div>
+</main>
 
 </div>
 
@@ -304,15 +308,15 @@ document.getElementById("profileImageDisplay")
 
 document.getElementById("linkedinLink")
 .href =
-    user.linkedIn || alert("LinkedIn not added yet");
+    user.linkedIn || alert("Add Linked Profile");
 
 document.getElementById("githubLink")
 .href =
-    user.github || alert("Github Not added yet");
+    user.github || alert("Add github profile");
 
 document.getElementById("userRating")
 .innerText =
-    `⭐ Rating: ${user.rating || 0}`;
+    `⭐ Rating: ${user.rating || "Not Rated"}`;
 
 document.getElementById("userVerified")
 .innerText =
@@ -406,6 +410,8 @@ document.getElementById("userVerified")
             }
 
             alert("Profile Updated");
+            document.getElementById("profileSection").style.display = "none";
+            document.getElementById("dashboardSection").style.display = "block";
 
         } else {
             alert("Update Failed");
@@ -459,7 +465,8 @@ document.getElementById("userVerified")
             if(response.ok) {
 
                 alert("Skill Uploaded");
-                 window.location.href = "dashboard.html";
+            document.getElementById("addSkillSection").style.display = "none";
+            document.getElementById("dashboardSection").style.display = "block";
 
             } else {
 
@@ -519,7 +526,7 @@ document.getElementById("userVerified")
             const summary=await response.json();
             document.getElementById("totalSkills").innerText=summary.totalSkills;
             document.getElementById("totalStudents").innerText=summary.totalStudents;
-            document.getElementById("rating").innerText=summary.rating;
+            document.getElementById("rating").innerText=summary.rating || "--";
 
         }
         catch(error){
@@ -559,10 +566,7 @@ document.getElementById("userVerified")
                 <p> Mentor :
                     ${booking.mentor.name}
                 </p>
-                <p>
-                    Session :
-                    ${booking.sessionDate}
-                </p>
+                <p> Session :${formatSlot(booking.sessionDate)}</p>
                 <p>
                     Message :
                     ${ booking.message ||"Nothing to show"}
@@ -594,6 +598,7 @@ async function loadSessions(){
             return;
         }
         sessions.forEach(session=>{
+
             container.innerHTML +=`
                 <div class="booking-card">
                 <div class="booking-top">
@@ -601,52 +606,31 @@ async function loadSessions(){
                         ${session.skill.title}
                     </h3>
                      ${
-            session.status==="PENDING"?
-            `<div class="action-buttons">
-                <button
-                class="accept-btn"
-                onclick="
-                updateBookingStatus(
-                ${session.id},
-                'ACCEPTED'
-                )">
-                Accept
-                </button>
-                <button
-                class="reject-btn"
-                onclick="
-                updateBookingStatus(
-                ${session.id},
-                'REJECTED'
-                )">
-                Reject
-                </button>
-                <button
-                class="reschedule-btn"
-                onclick="
-                openReschedule(
-                ${session.id}
-                )">
-                Reschedule
-                </button>
-            </div>`
-            :
-            `<span class="booking-status">
-                ${session.status}
-            </span>`
-        }
-        </div>
-        <p>
-            Student:
-            ${session.student.name}
-        </p>
-        <p> Session :${session.sessionDate}</>p>
-        <p>
-            Message :
-            ${session.message || "No message to show"}
-        </p>
-    </div>
-       `;
+                    session.status==="PENDING" || session.status==="RESCHEDULED"?
+                    `<div class="action-buttons">
+                        ${session.status==="RESCHEDULED"?
+                            `<div class="accepted-slot">
+                                Accepted:${formatSlot(session.sessionDate)}</div>`:""}
+                            
+                        <button class="accept-btn" onclick="updateBookingStatus(${session.id},'ACCEPTED')">Accept</button>
+                        <button class="reject-btn" onclick="updateBookingStatus(${session.id},'REJECTED')">Reject</button>
+                        <button class="reschedule-btn" onclick="openReschedule(${session.id})">Reschedule</button>
+                    </div>`
+                    :
+                    `<span class="booking-status">${session.status}</span>`
+                }
+                </div>
+                <p>
+                    Student:
+                    ${session.student.name}
+                </p>
+                <p> Session :${formatSlot(session.sessionDate)}</p>
+                <p>
+                    Message :
+                    ${session.message || "No message to show"}
+                </p>
+            </div>
+            `;
         });
     }
     catch(error){
@@ -684,7 +668,10 @@ async function sendReschedule(){
     const s1=document.getElementById("slot1").value+":00";
     const s2=document.getElementById("slot2").value+":00";
     const s3=document.getElementById("slot3").value+":00";
-    console.log(s1,s2,s3);
+    if(!s1 || !s2 || !s3){
+        alert("Please select all 3 slots");
+        return;
+    }
     try {
         const response=await fetch(`http://localhost:9090/reschedule/propose/${selectedBookingId}?slot1=${encodeURIComponent(s1)}&slot2=${encodeURIComponent(s2)}&slot3=${encodeURIComponent(s3)}`,
         {
@@ -711,12 +698,7 @@ document.getElementById("rescheduleOverlay").style.display="none";
 loadMySkills();
 loadSummary();
 
-async function loadRescheduleSlots(bookingId){
-    try{
-        const response=await fetch(`http://localhost:9090/reschedule/slots/${bookingId}`);
-        const request=await response.json();
-        const container=document.getElementById(`rescheduleSlotsContainer-${bookingId}`);
-        function formatSlot(slot){
+ function formatSlot(slot){
             const date=new Date(slot);
             const day=String(date.getDate()).padStart(2,"0");
             const month=String(date.getMonth()+1).padStart(2,"0");
@@ -725,11 +707,16 @@ async function loadRescheduleSlots(bookingId){
             const minutes=String(date.getMinutes()).padStart(2,"0");
             return `${day}/${month}/${year} ${hours}:${minutes}`;
         }
+async function loadRescheduleSlots(bookingId){
+    try{
+        const response=await fetch(`http://localhost:9090/reschedule/slots/${bookingId}`);
+        const request=await response.json();
+        const container=document.getElementById("popupSlotsContainer");
         container.innerHTML=`
-        <h5> Accept one of the slots for rescheduling</h5>
         <button class="slot-btn" onclick="acceptSlot(${bookingId},'${request.slot1}')">${formatSlot(request.slot1)}</button>
         <button class="slot-btn" onclick="acceptSlot(${bookingId},'${request.slot2}')">${formatSlot(request.slot2)}</button>
         <button class="slot-btn" onclick="acceptSlot(${bookingId},'${request.slot3}')">${formatSlot(request.slot3)}</button>`;
+        document.getElementById("slotPopup").style.display="flex";
     }catch(error){
         console.log(error);
         alert("cannot load slots");
@@ -747,11 +734,15 @@ async function acceptSlot(bookingId,slot){
             throw new Error("Failed");
         }
         alert("Reschedule accepted");
+        closeSlotPopup();
         loadBookings();
     }catch(error){
         console.log(error);
         alert("cannot accept slot");
     }
+}
+function closeSlotPopup(){
+    document.getElementById("slotPopup").style.display="none";
 }
 
 </script>
