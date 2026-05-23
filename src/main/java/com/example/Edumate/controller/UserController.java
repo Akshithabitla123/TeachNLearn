@@ -25,6 +25,8 @@ import com.example.Edumate.dto.UserDTO;
 import com.example.Edumate.model.User;
 import com.example.Edumate.service.UserService;
 
+import jakarta.validation.Valid;
+
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/users")
@@ -56,7 +58,23 @@ public class UserController {
     //uploading profile image
     @PostMapping("/upload-image")
     public String uploadImage(@RequestParam("image") MultipartFile file) throws IOException{
+        //empty file check
+        if(file.isEmpty()){
+            throw new RuntimeException("Please select an image");
+        }
         String originalName = file.getOriginalFilename();
+        if(originalName==null){
+            throw new RuntimeException("Invalid file");
+        }
+        //allow only image types
+        if(!originalName.endsWith(".jpg") && !originalName.endsWith(".jpeg") && !originalName.endsWith(".png")){
+            throw new RuntimeException("Only JPG,JPEG and PNG are allowed");
+        }
+        //size validation upto 5mb
+        if(file.getSize()>5*1024*1024){
+            throw new RuntimeException("Image too large");
+        }
+
         String cleanName = originalName.replaceAll("\\s+", "_");
         String fileName=System.currentTimeMillis()+"_"+cleanName;
         Path path=Paths.get("uploads/"+fileName);
@@ -66,7 +84,7 @@ public class UserController {
     }
     //update profile
     @PutMapping("/profile/{id}")
-    public User updateProfile(@PathVariable Long id, @RequestBody UpdateProfileDTO request){
+    public User updateProfile(@PathVariable Long id,@Valid @RequestBody UpdateProfileDTO request){
         return userService.updateProfile(id,request);
     }
     //get summary

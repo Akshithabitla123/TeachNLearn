@@ -1,12 +1,22 @@
 package com.example.Edumate.controller;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.Edumate.dto.SkillResponseDTO;
 import com.example.Edumate.model.Skill;
 import com.example.Edumate.service.SkillService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import jakarta.validation.Valid;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -15,7 +25,7 @@ public class SkillController {
     @Autowired
     private SkillService skillService;
     @PostMapping("/{userId}")
-    public Skill createSkill(@PathVariable Long userId,@RequestBody Skill skill){
+    public Skill createSkill(@PathVariable Long userId,@Valid @RequestBody Skill skill){
         return skillService.createSkill(userId, skill);
     }
     //get all skills

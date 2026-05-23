@@ -1,13 +1,24 @@
 package com.example.Edumate.controller;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.Edumate.Enum.Status;
 import com.example.Edumate.dto.BookingDTO;
 import com.example.Edumate.model.Booking;
 import com.example.Edumate.service.BookingService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import jakarta.validation.Valid;
 
 
 @RestController
@@ -17,7 +28,7 @@ public class BookingController {
     @Autowired
     private BookingService bookingService;
     @PostMapping
-    public Booking createBooking(@RequestBody BookingDTO dto){
+    public Booking createBooking(@Valid @RequestBody BookingDTO dto){
         return bookingService.createBooking(dto);
     }
     //get bookings of mentor

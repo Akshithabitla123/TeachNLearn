@@ -1,8 +1,20 @@
 package com.example.Edumate.dto;
 
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
 public class UpdateProfileDTO {
+    @Size(max=300,message="Bio cannot exceed 300 characters")
     private String bio;
+     @Pattern(
+        regexp = "^(https?:\\/\\/)?(www\\.)?linkedin\\.com\\/.*$",
+        message = "Invalid LinkedIn URL"
+    )
     private String linkedIn;
+    @Pattern(
+        regexp = "^(https?:\\/\\/)?(www\\.)?github\\.com\\/.*$",
+        message = "Invalid Github URL"
+    )
     private String github;
     private String profileImage;
 

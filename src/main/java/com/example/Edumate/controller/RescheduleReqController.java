@@ -16,6 +16,8 @@ import com.example.Edumate.model.Booking;
 import com.example.Edumate.model.RescheduleRequest;
 import com.example.Edumate.service.RescheduleReqService;
 
+import jakarta.validation.Valid;
+
 
 @RestController
 @RequestMapping("/reschedule")
@@ -28,7 +30,7 @@ public class RescheduleReqController {
     }
     //mentor gives slots
     @PutMapping("/propose/{id}")
-    public RescheduleRequest propose(@PathVariable Long id,@RequestParam LocalDateTime slot1,@RequestParam LocalDateTime slot2,@RequestParam LocalDateTime slot3){
+    public RescheduleRequest propose(@PathVariable Long id, @Valid @RequestParam LocalDateTime slot1,@Valid @RequestParam LocalDateTime slot2,@Valid @RequestParam LocalDateTime slot3){
         return service.proposeSlots(id, slot1, slot2, slot3);
     }
     //get the slots

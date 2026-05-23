@@ -7,6 +7,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class RescheduleRequest {
@@ -15,8 +18,14 @@ public class RescheduleRequest {
     private Long id;
     @OneToOne
     private Booking booking;
+    @NotNull(message="Slot1 is required")
+    @Future(message="Slot1 must be in the future")
     private LocalDateTime slot1;
+    @NotNull(message="Slot2 is required")
+    @Future(message="Slot2 must be in the future")
     private LocalDateTime slot2;
+    @NotNull(message="Slot3 is required")
+    @Future(message="Slot3 must be in the future")
     private LocalDateTime slot3;
     private LocalDateTime acceptedSlot;
 
@@ -67,6 +76,14 @@ public class RescheduleRequest {
     public void setAcceptedSlot(LocalDateTime acceptedSlot) {
         this.acceptedSlot = acceptedSlot;
     }
-
+    @AssertTrue(message="Slots must be unique and non-null")
+    public boolean isSlotsValid(){
+        if(slot1==null || slot2==null || slot3==null){
+            return false;
+        }
+        return !(slot1.equals(slot2) ||
+                slot2.equals(slot3) ||
+                slot1.equals(slot3));
+    }
 
 }
