@@ -1,9 +1,17 @@
 package com.example.Edumate.model;
 
-import com.example.Edumate.Enum.Status;
-import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
+
+import com.example.Edumate.Enum.Status;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Booking {
@@ -28,6 +36,7 @@ public class Booking {
     private Status status;
     private boolean mentorCompleted=false;
     private boolean studentCompleted=false;
+    private boolean reviewed=false;
 
     public Booking() {
     }
@@ -103,4 +112,13 @@ public class Booking {
     public void setStudentCompleted(boolean studentCompleted) {
         this.studentCompleted = studentCompleted;
     }
+
+    public boolean isReviewed() {
+        return reviewed;
+    }
+
+    public void setReviewed(boolean reviewed) {
+        this.reviewed = reviewed;
+    }
+
 }

@@ -560,7 +560,14 @@ document.getElementById("userVerified")
                     <div id="rescheduleSlotsContainer-${booking.id}"></div>
                     </div>
                     `:
-                    `<span class="booking-status"> ${booking.status}</span>`
+                    booking.status==="ACCEPTED"?(!booking.studentCompleted? 
+                    `<button class="complete-btn" onclick="markCompleted(${booking.id})">Session completed?</button>` : 
+                    !booking.mentorCompleted? `<div class="waiting-completion">Mentor confirmation needed</div>`: 
+                    `<div class="completed">Session completed</div>`)
+                    :
+                    booking.status==="COMPLETED"?
+                    `<button class="rate-btn" onclick="openRating(${booking.id})">Rate Session</button>`
+                    :`<span class="booking-status"> ${booking.status}</span>`
                     }
                 </div>
                 <p> Mentor :
@@ -617,6 +624,10 @@ async function loadSessions(){
                         <button class="reschedule-btn" onclick="openReschedule(${session.id})">Reschedule</button>
                     </div>`
                     :
+                    session.status==="ACCEPTED"?(!session.mentorCompleted? 
+                    `<button class="complete-btn" onclick="markCompleted(${session.id})">Session completed?</button>` : 
+                    !session.studentCompleted? `<div class="waiting-completion">Learner confirmation needed</div>`: 
+                    `<div class="completed">Session completed</div>`):
                     `<span class="booking-status">${session.status}</span>`
                 }
                 </div>
@@ -745,6 +756,23 @@ function closeSlotPopup(){
     document.getElementById("slotPopup").style.display="none";
 }
 
+async function markCompleted(sessionId){
+    try{
+        const response=await fetch(`http://localhost:9090/bookings/${sessionId}/complete?userId=${user.id}`,
+            {
+                method:"PUT"
+            }
+        );
+        if(!response.ok){
+            throw new Error("Error");
+        }
+        loadSessions();
+        loadBookings();
+    }catch(error){
+        console.log(error);
+        alert("Completion failed");
+    }
+}
 </script>
 </body>
 </html>

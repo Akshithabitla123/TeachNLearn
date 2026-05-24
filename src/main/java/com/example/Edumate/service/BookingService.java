@@ -83,6 +83,9 @@ public class BookingService {
     public Booking markCompleted(Long bookingId,Long userId){
         Booking booking=bookingRepo.findById(bookingId)
                 .orElseThrow(()->new RuntimeException("Booking not found"));
+        if(booking.getStatus()!=Status.ACCEPTED){
+            throw new RuntimeException("Only accepted sessions can be completed");
+        }
         Long mentorId=booking.getMentor().getId();
         Long studentId=booking.getStudent().getId();
         if(mentorId.equals(userId)){
