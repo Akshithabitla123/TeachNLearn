@@ -10,7 +10,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
@@ -273,6 +273,33 @@
         </button>
     </div>
 </div>
+
+<div id="ratingModal" class="rating-modal">
+    <div class="rating-content">
+        <span class="close-rating" onclick="closeRating()"></span>
+        <h3>Rate Session</h3>
+        <select id="ratingStars">
+            <option value="">Select rating</option>
+            <option value="1"><i class="fa-solid fa-star"></i> 1</option>
+            <option value="2"><i class="fa-solid fa-star"></i> 2</option>
+            <option value="3"><i class="fa-solid fa-star"></i> 3</option>
+            <option value="4"><i class="fa-solid fa-star"></i> 4</option>
+            <option value="5"><i class="fa-solid fa-star"></i> 5</option>
+        </select>
+        <textarea
+        id="ratingComment"
+        placeholder="Write feedback">
+        </textarea>
+        <button onclick="submitRating()">
+            Submit
+        </button>
+        <button onclick="closeRating()">
+            Close
+        </button>
+
+    </div>
+
+</div>
 </main>
 
 </div>
@@ -314,15 +341,13 @@ document.getElementById("githubLink")
 .href =
     user.github || alert("Add github profile");
 
-document.getElementById("userRating")
-.innerText =
-    `⭐ Rating: ${user.rating || "Not Rated"}`;
+document.getElementById("userRating").innerHTML =
+    `<i class="fa-solid fa-star"></i> Rating: ${user.rating ?? "Not Rated"}`;
 
-document.getElementById("userVerified")
-.innerText =
+document.getElementById("userVerified").innerHTML =
     user.verified
-        ? "✔ Verified Mentor"
-        : "❌ Not Verified";
+        ? `<i class="fa-solid fa-circle-check"></i> Verified Mentor`
+        : `<i class="fa-solid fa-circle-xmark"></i> Not Verified`;
 
 
     // SECTION SWITCHING
@@ -566,7 +591,7 @@ document.getElementById("userVerified")
                     `<div class="completed">Session completed</div>`)
                     :
                     booking.status==="COMPLETED"?
-                    `<button class="rate-btn" onclick="openRating(${booking.id})">Rate Session</button>`
+                    (booking.reviewed?`<span class="rated-text">Session Rated</span>`:`<button class="rate-btn" onclick="openRating(${booking.id})">Rate Session</button>`)
                     :`<span class="booking-status"> ${booking.status}</span>`
                     }
                 </div>
@@ -773,6 +798,51 @@ async function markCompleted(sessionId){
         alert("Completion failed");
     }
 }
+let currentBookingId=null;
+function openRating(bookingId){
+    currentBookingId=bookingId;
+    document.getElementById("ratingModal").style.display="flex";
+}
+function closeRating(){
+    document.getElementById("ratingModal").style.display="none";
+    currentBookingId=null;
+    document.getElementById("ratingStars").value="";
+    document.getElementById("ratingComment").value="";
+}
+async function submitRating(){
+    const stars=document.getElementById("ratingStars").value;
+    const comment=document.getElementById("ratingComment").value;
+    if(!stars){
+        alert("Select rating");
+        return;
+    }
+    try {
+        const response=await fetch(`http://localhost:9090/rating/${user.id}`,{
+            method:"POST",
+            headers:{
+                "Content-type":"application/json"
+            },
+            body:JSON.stringify({
+                bookingId:currentBookingId,
+                stars:parseInt(stars),
+                comment:comment
+            })    
+        });
+        if(!response.ok){
+            throw new Error();
+        }
+        alert("Rating submitted");
+        closeRating();
+        loadBookings();
+
+    } catch (error){
+        console.log(error);
+        alert("Failed to rate");
+        
+    }
+
+}
+
 </script>
 </body>
 </html>
