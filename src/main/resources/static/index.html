@@ -19,7 +19,7 @@
     <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
         <li><a href="search.html">Explore Skills</a></li>
-        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="#" onclick="openDashboard(event)">Dashboard</a></li>
     </ul>
     <div class="nav-actions" id="navActions">
 
@@ -221,7 +221,16 @@ function updateNavbar(){
     }
 }
 
-
+function openDashboard(event){
+    event.preventDefault();
+    const user=JSON.parse(localStorage.getItem("user"));
+    if(user){
+        window.location.href="dashboard.html";
+    }
+    else{
+        window.location.href="login.html";
+    }
+}
 
     async function loadSkills() {
 

@@ -1,8 +1,11 @@
 package com.example.Edumate.dto;
 
+import jakarta.validation.constraints.Size;
+
 public class RatingDTO {
     private Long bookingId;
     private int stars;
+    @Size(min=3,max=200,message="Comment should be less than 200 characters")
     private String comment;
 
     public Long getBookingId() {

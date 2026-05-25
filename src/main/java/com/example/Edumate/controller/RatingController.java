@@ -15,6 +15,8 @@ import com.example.Edumate.dto.RatingDTO;
 import com.example.Edumate.model.Rating;
 import com.example.Edumate.service.RatingService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/rating")
@@ -23,7 +25,7 @@ public class RatingController {
     private RatingService ratingService;
     //add rating
     @PostMapping("/{studentId}")
-    public Rating addRating(@PathVariable Long studentId,@RequestBody RatingDTO dto){
+    public Rating addRating(@PathVariable Long studentId,@Valid @RequestBody RatingDTO dto){
         return ratingService.addRating(studentId,dto);
     }
     //get mentor ratings

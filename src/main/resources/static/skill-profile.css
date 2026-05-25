@@ -759,3 +759,54 @@ translateY(0);
 opacity:1;
 }
 }
+
+/* reviews and comments */
+.reviews-section{
+    margin-top:50px;
+}
+
+.reviews-section h2{
+    font-size:32px;
+    margin-bottom:25px;
+}
+
+.review-card{
+    background:white;
+    padding:22px;
+    border-radius:20px;
+    margin-bottom:20px;
+    box-shadow:
+    0 8px 24px rgba(0,0,0,.08);
+}
+
+.review-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.review-user{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    font-size:18px;
+    font-weight:600;
+}
+
+.review-user i{
+    font-size:28px;
+    color:#666;
+}
+
+.review-stars{
+    color:#ffb400;
+    display:flex;
+    gap:4px;
+}
+
+.review-comment{
+    color:#555;
+    line-height:1.7;
+    padding-left:40px;
+}

@@ -273,28 +273,20 @@
         </button>
     </div>
 </div>
-
-<div id="ratingModal" class="rating-modal">
-    <div class="rating-content">
-        <span class="close-rating" onclick="closeRating()"></span>
-        <h3>Rate Session</h3>
-        <select id="ratingStars">
-            <option value="">Select rating</option>
-            <option value="1"><i class="fa-solid fa-star"></i> 1</option>
-            <option value="2"><i class="fa-solid fa-star"></i> 2</option>
-            <option value="3"><i class="fa-solid fa-star"></i> 3</option>
-            <option value="4"><i class="fa-solid fa-star"></i> 4</option>
-            <option value="5"><i class="fa-solid fa-star"></i> 5</option>
-        </select>
+<!-- rating session -->
+<div id="ratingModal" class="rating-overlay">
+    <div class="rating-popup">
+        <div class="rating-header">
+            <h3>Rate Session</h3>
+            <button class="close-rating" onclick="closeRating()">&times;</button>
+        </div>
+        
+        <div id="starContainer" class="star-rating"></div>
         <textarea
         id="ratingComment"
-        placeholder="Write feedback">
-        </textarea>
+        placeholder="Share your Experience with this session and the mentor"></textarea>
         <button onclick="submitRating()">
             Submit
-        </button>
-        <button onclick="closeRating()">
-            Close
         </button>
 
     </div>
@@ -558,6 +550,7 @@ document.getElementById("userVerified").innerHTML =
             console.log(error);
         }
     }
+    //load bookings
     async function loadBookings(){
     try{
         const response=await fetch(`http://localhost:9090/bookings/student/${user.id}`);
@@ -802,17 +795,22 @@ let currentBookingId=null;
 function openRating(bookingId){
     currentBookingId=bookingId;
     document.getElementById("ratingModal").style.display="flex";
+    loadStars();
 }
 function closeRating(){
     document.getElementById("ratingModal").style.display="none";
     currentBookingId=null;
-    document.getElementById("ratingStars").value="";
+    selectedStars=0;
+    document.querySelectorAll(".star")
+        .forEach((star,index)=>{
+            star.classList.remove("active");
+        });
     document.getElementById("ratingComment").value="";
 }
 async function submitRating(){
-    const stars=document.getElementById("ratingStars").value;
+    const stars=selectedStars;
     const comment=document.getElementById("ratingComment").value;
-    if(!stars){
+    if(stars==0){
         alert("Select rating");
         return;
     }
@@ -824,7 +822,7 @@ async function submitRating(){
             },
             body:JSON.stringify({
                 bookingId:currentBookingId,
-                stars:parseInt(stars),
+                stars:stars,
                 comment:comment
             })    
         });
@@ -843,6 +841,27 @@ async function submitRating(){
 
 }
 
+let selectedStars=0;
+function loadStars(){
+    const container=document.getElementById("starContainer");
+    container.innerHTML="";
+    for(let i=1;i<=5;i++){
+        container.innerHTML+=`<i class="fa-solid fa-star star" data-value="${i}" onclick="selectRating(${i})"></i>
+        `;
+    }
+}
+function selectRating(value){
+    selectedStars=value;
+    const stars=document.querySelectorAll(".star");
+    stars.forEach((star,index)=>{
+        if(index<value){
+            star.classList.add("active");
+        }
+        else{
+            star.classList.remove("active");
+        }
+    });
+}
 </script>
 </body>
 </html>
