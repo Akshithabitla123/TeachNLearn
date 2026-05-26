@@ -1,10 +1,12 @@
 package com.example.Edumate.repository;
 
-import com.example.Edumate.model.User;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import com.example.Edumate.model.User;
 
 @Repository
 public interface UserRepo extends JpaRepository<User,Long> {
@@ -14,4 +16,5 @@ public interface UserRepo extends JpaRepository<User,Long> {
     boolean existsByName(String name);
 
     Optional<User> findByEmail(String email);
+    List<User> findTop3ByOrderByRatingDesc();
 }

@@ -92,5 +92,10 @@ public class UserController {
     public SummaryDTO getSummary(@PathVariable Long id){
         return userService.getSummary(id);
     }
+    //display top 3 highest rated mentors
+    @GetMapping("/top-mentors")
+    public List<User> getTopMentors(){
+        return userService.getTopMentors();
+    }
 
 }

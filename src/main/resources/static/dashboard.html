@@ -48,30 +48,19 @@
 
     <main class="dashboard-content">
         <section id="dashboardSection">
-
             <div class="dashboard-header">
-
                 <h1 id="welcomeText">
                     Welcome Back
                 </h1>
                 <div class="user-profile-card">
-
                     <div class="profile-left">
-
                         <img id="profileImageDisplay" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="profile">
-
                     </div>
-
                     <div class="profile-right">
-
                         <h2 id="userName"></h2>
-
                         <p id="userEmail"></p>
-
                         <p id="userBio"></p>
-
                         <div class="profile-links">
-
                             <a id="linkedinLink"
                                target="_blank">
                                 LinkedIn
@@ -80,47 +69,33 @@
                                target="_blank">
                                 GitHub
                             </a>
-
                         </div>
-
                         <div class="profile-bottom">
                         <span id="userRating"></span>
                         <span id="userVerified"></span>
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
-
             <div class="stats-grid">
-
                 <div class="stat-card">
                     <h3>Skills Uploaded</h3>
                     <p id="totalSkills">0</p>
                 </div>
-
                 <div class="stat-card">
-                    <h3>Total Students</h3>
+                    <h3>Total Learners</h3>
                     <p id="totalStudents">0</p>
                 </div>
-
                 <div class="stat-card">
                     <h3>Rating</h3>
                     <p id="rating">0</p>
                 </div>
-
             </div>
-
         </section>
         <section id="profileSection"
                  style="display:none;">
-
             <h2>Update Profile</h2>
-
             <div class="profile-form">
-
                 <input
                         type="text"
                         id="bio"
@@ -815,6 +790,7 @@ async function markCompleted(sessionId){
         }
         loadSessions();
         loadBookings();
+        loadSummary();
     }catch(error){
         console.log(error);
         alert("Completion failed");

@@ -63,4 +63,11 @@ public class SkillController {
     public SkillResponseDTO getSkillOfUser(@PathVariable Long userId,@PathVariable Long skillId){
         return skillService.getSkillOfUser(userId, skillId);
     }
+    //get random skills to display in trneding skills section
+    @GetMapping("/random")
+    public List<Skill> getRandomSkills(){
+        List<Skill> skills=skillService.getRandomSkills();
+        return skills;
+
+    }
 }

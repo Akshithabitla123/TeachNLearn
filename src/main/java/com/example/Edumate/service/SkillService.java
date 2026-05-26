@@ -1,15 +1,17 @@
 package com.example.Edumate.service;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.example.Edumate.dto.SkillResponseDTO;
 import com.example.Edumate.dto.UserDTO;
 import com.example.Edumate.model.Skill;
 import com.example.Edumate.model.User;
 import com.example.Edumate.repository.SkillRepo;
 import com.example.Edumate.repository.UserRepo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class SkillService {
@@ -97,5 +99,11 @@ public class SkillService {
                         new RuntimeException("Skill not found"));
 
         return mapToDTO(skill);
+    }
+    //get random skills 
+    public List<Skill> getRandomSkills(){
+        List<Skill> skills=skillRepo.findAll();
+        Collections.shuffle(skills);
+        return skills.stream().limit(8).toList();
     }
 }

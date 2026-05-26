@@ -14,17 +14,16 @@
 <body>
 
 <nav class="navbar">
-    <div class="logo">Edumate</div>
+    <div class="logo">TeachNLearn</div>
 
     <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
-        <li><a href="search.html">Explore Skills</a></li>
         <li><a href="#" onclick="openDashboard(event)">Dashboard</a></li>
     </ul>
     <div class="nav-actions" id="navActions">
 
     </div>
-</nav>
+</nav> 
 
 <section class="hero">
     <div class="hero-content">
@@ -56,127 +55,77 @@
     <h2>Trending Skills</h2>
 
     <div class="skills-grid" id="skillsContainer">
-
-        <div class="skill-card">
-            <h3>Spring Boot</h3>
-            <p>Backend Development</p>
-            <span>120 Mentors</span>
-        </div>
-
-        <div class="skill-card">
-            <h3>React JS</h3>
-            <p>Frontend Development</p>
-            <span>95 Mentors</span>
-        </div>
-
-        <div class="skill-card">
-            <h3>Machine Learning</h3>
-            <p>AI & Data Science</p>
-            <span>75 Mentors</span>
-        </div>
-
-        <div class="skill-card">
-            <h3>UI/UX Design</h3>
-            <p>Design</p>
-            <span>80 Mentors</span>
-        </div>
-
+        
     </div>
 </section>
 
 <section class="mentors-section">
-
     <h2>Top Mentors</h2>
-
-    <div class="mentors-grid">
-
-        <div class="mentor-card">
-
-            <div class="mentor-top"></div>
-
-            <div class="mentor-content">
-
-                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="mentor" />
-
-                <h3>Akshitha</h3>
-
-                <p class="mentor-skill">
-                    Spring Boot Expert
-                </p>
-
-                <div class="mentor-rating">
-                    <i class="fa-solid fa-star"></i> 4.9
-                </div>
-
-                <button class="view-btn">
-                    View Profile
-                </button>
-
-            </div>
-
-        </div>
-
-        <div class="mentor-card">
-
-            <div class="mentor-top"></div>
-
-            <div class="mentor-content">
-
-                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="mentor" />
-
-                <h3>Rahul</h3>
-
-                <p class="mentor-skill">
-                    AIML Expert
-                </p>
-
-                <div class="mentor-rating">
-                    <i class="fa-solid fa-star"></i> 4.9
-                </div>
-
-                <button class="view-btn">
-                    View Profile
-                </button>
-
-            </div>
-
-        </div>
-
-        <div class="mentor-card">
-
-            <div class="mentor-top"></div>
-
-            <div class="mentor-content">
-
-                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="mentor" />
-
-                <h3>Karthik</h3>
-
-                <p class="mentor-skill">
-                    Album Designing Expert
-                </p>
-
-                <div class="mentor-rating">
-                    <i class="fa-solid fa-star"></i> 4.9
-                </div>
-
-                <button class="view-btn">
-                    View Profile
-                </button>
-
-            </div>
-
-        </div>
-
+    <div class="mentors-grid" id="topMentorsContainer">
+       
     </div>
-
 </section>
 
 <footer>
     <p>© 2026 Edumate. All Rights Reserved.</p>
 </footer>
 <script>
-
+    loadTopMentors();
+    loadTrendingSkills();
+    async function loadTopMentors(){
+        try{
+            const response=await fetch("http://localhost:9090/users/top-mentors");
+            const mentors=await response.json();
+            const container=document.getElementById("topMentorsContainer");
+            container.innerHTML="";
+            mentors.forEach(
+                mentor=>{
+                    container.innerHTML+=`
+                     <div class="mentor-card">
+                    <div class="mentor-top"></div>
+                    <div class="mentor-content">
+                        <img src="${mentor.profileImage || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}" alt="mentor" />
+                        <h3>${mentor.name}</h3>
+                        <p class="mentor-skill">
+                            ${mentor.bio}
+                        </p>
+                        <div class="mentor-rating">
+                            <i class="fa-solid fa-star"></i>${mentor.rating}
+                        </div>
+                        <button class="view-btn" onclick="viewMentor(${mentor.id})">
+                            View Profile
+                        </button>
+                    </div>
+                </div> 
+                    `
+                }
+            )
+        }catch(error){
+            console.log(error);
+        }
+    }
+    function viewMentor(userId){
+        window.location.href=`skill-profile.html?userId=${userId}`;
+    }
+    async function loadTrendingSkills(){
+        try{
+            const response=await fetch("http://localhost:9090/skills/random");
+            const skills=await response.json();
+            const container=document.getElementById("skillsContainer");
+            container.innerHTML="";
+            skills.forEach(skill=>{
+                container.innerHTML+=`
+                <div class="skill-card">
+                    <h3>${skill.title}</h3>
+                    <p>${skill.category}</p>
+                    <span>Mentor: ${skill.user.name}</span>
+                </div>
+                `
+            })
+        }catch(error){
+            console.log(error);
+        }
+    }
     function goToLogin() {
 
         window.location.href = "login.html";
@@ -231,34 +180,7 @@ function openDashboard(event){
         window.location.href="login.html";
     }
 }
-
-    async function loadSkills() {
-
-        const response = await fetch("http://localhost:9090/skills");
-
-        const skills = await response.json();
-
-        const container = document.getElementById("skillsContainer");
-
-        if(container) {
-
-            container.innerHTML = "";
-
-            skills.forEach(skill => {
-
-                container.innerHTML += `
-                <div class="skill-card">
-                    <h3>${skill.title}</h3>
-                    <p>${skill.description}</p>
-                    <span>${skill.experienceLevel}</span>
-                </div>
-                `;
-            });
-        }
-    }
-
-    loadSkills();
-    updateNavbar();
+   updateNavbar();
 
 async function searchSkills(){
     const keyword=document.getElementById("searchInput").value;

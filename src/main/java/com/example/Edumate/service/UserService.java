@@ -1,15 +1,17 @@
 package com.example.Edumate.service;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.example.Edumate.dto.SummaryDTO;
 import com.example.Edumate.dto.UpdateProfileDTO;
 import com.example.Edumate.dto.UserDTO;
 import com.example.Edumate.model.User;
+import com.example.Edumate.repository.BookingRepo;
 import com.example.Edumate.repository.SkillRepo;
 import com.example.Edumate.repository.UserRepo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class UserService {
@@ -17,6 +19,8 @@ public class UserService {
     private UserRepo userRepo;
     @Autowired
     private SkillRepo skillRepo;
+    @Autowired
+    private BookingRepo bookingRepo;
 
     //save user
     public String saveUser(User user){
@@ -37,27 +41,16 @@ public class UserService {
         return userRepo.findAll();
     }
     private UserDTO mapToDTO(User user){
-
         UserDTO dto = new UserDTO();
-
         dto.setId(user.getId());
-
         dto.setName(user.getName());
-
         dto.setEmail(user.getEmail());
-
         dto.setBio(user.getBio());
-
         dto.setRating(user.getRating());
-
         dto.setProfileImage(user.getProfileImage());
-
         dto.setLinkedIn(user.getLinkedIn());
-
         dto.setGithub(user.getGithub());
-
         dto.setVerified(user.isVerified());
-
         return dto;
     }
     //get user by id
@@ -89,8 +82,13 @@ public class UserService {
         SummaryDTO dto=new SummaryDTO();
         int totalSkills=skillRepo.countByUserId(id);
         dto.setTotalSkills(totalSkills);
-        dto.setTotalStudents(12);//set to some random
+        int totalLearners=bookingRepo.countCompletedLearners(user.getId());
+        dto.setTotalStudents(totalLearners);//set to some random
         dto.setRating(user.getRating()==null?0: user.getRating());
         return dto;
+    }
+    //get top 3 mentors
+    public List<User> getTopMentors(){
+        return userRepo.findTop3ByOrderByRatingDesc();
     }
 }

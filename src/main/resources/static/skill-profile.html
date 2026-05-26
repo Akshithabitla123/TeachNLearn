@@ -30,7 +30,7 @@
         </button>
     </div>
 
-    <div class="skill-section">
+    <div class="skill-section" id="skillSection" style="display:none;">
         <h2>Selected Skill</h2>
         <div class="skill-card">
             <h3 id="skillTitle"></h3>
@@ -54,7 +54,7 @@
         </div>
         <!-- reviews and comments -->
         <div class="reviews-section">
-            <h2>Learner's pov on mentor</h2>
+            <h2>Learner's pov on mentor & session</h2>
             <div id="reviewsContainer">
 
             </div>
@@ -123,6 +123,60 @@
     console.log(userId);
     console.log(skillId);
 
+    async function loadMentorOnly(){
+
+    try{
+
+        const response=
+        await fetch(
+        `http://localhost:9090/users/${userId}`
+        );
+
+        const mentor=
+        await response.json();
+
+        document.getElementById(
+        "mentorImage"
+        ).src=
+        mentor.profileImage ||
+        "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+
+        document.getElementById(
+        "mentorName"
+        ).innerText=
+        mentor.name;
+
+        document.getElementById(
+        "mentorBio"
+        ).innerText=
+        mentor.bio ||
+        "No bio available";
+
+        document.getElementById(
+        "mentorRating"
+        ).innerText=
+        mentor.rating || 0;
+
+        document.getElementById(
+        "linkedinLink"
+        ).href=
+        mentor.linkedIn || "#";
+
+        document.getElementById(
+        "githubLink"
+        ).href=
+        mentor.github || "#";
+
+    }
+    catch(error){
+
+        console.log(error);
+
+        alert(
+        "Failed to load mentor"
+        );
+    }
+}
     async function loadProfile(){
 
         try{
@@ -177,8 +231,8 @@
             document.getElementById("skillLevel").innerText =
                 "Level : " + skill.experienceLevel;
 
-            document.getElementById("skillPrice").innerText =
-                "₹ " + skill.price;
+            document.getElementById("skillPrice").innerHTML =
+                `<i class="fa-solid fa-indian-rupee-sign"></i> ${skill.price}`;
 
         }
         catch(error){
@@ -190,75 +244,38 @@
     }
 
     async function loadSkills(){
-
     try{
-
         const response = await fetch(
             `http://localhost:9090/skills/user/${userId}`
         );
-
         const skills = await response.json();
-
-        const skillSection =
-            document.querySelector(".skill-section");
-
+        const skillSection = document.querySelector(".skill-section");
         skillSection.innerHTML = `
-
-            <h2 class="all-skills-heading">
-                All Skills
-            </h2>
-
+            <h2 class="all-skills-heading">All Skills</h2>
             <div id="allSkillsContainer"></div>
         `;
-
-        const container =
-            document.getElementById("allSkillsContainer");
+        const container =document.getElementById("allSkillsContainer");
         skills.forEach(skill => {
-
             container.innerHTML += `
-
                 <div class="all-skill-card" ondblclick="skillProfile(${skill.userDTO.id},${skill.id})">
                     <div class="all-skill-content">
-
-                        <h3>
-                            ${skill.title}
-                        </h3>
-
-                        <p>
-                            ${skill.description}
-                        </p>
-
+                        <h3>${skill.title}</h3>
+                        <p>${skill.description}</p>
                         <div class="all-skill-meta">
-
-                            <span>
-                                ${skill.category}
-                            </span>
-
-                            <span>
-                                ${skill.experienceLevel}
-                            </span>
-
-                            <span>
-                                ₹ ${skill.price}
-                            </span>
-
+                            <span>${skill.category}</span>
+                            <span>${skill.experienceLevel}</span>
+                            <span> <i class="fa-solid fa-indian-rupee-sign"></i>${skill.price}</span>
                         </div>
-
                     </div>
-
                 </div>
             `;
         });
-
         skillSection.scrollIntoView({
             behavior:"smooth"
         });
-
     }
     catch(error){
-
         console.log(error);
-
         alert("Failed to load skills");
     }
 }
@@ -455,11 +472,23 @@ async function checkBookingStatus(){
 function closeBookingPopup(){
     document.getElementById("bookingPopup").style.display="none";
 }
-async function initialize(){
 
-    await loadProfile();
-    await checkBookingStatus();
-    await loadReviews();
+async function initialize(){
+    const section=document.getElementById("skillSection");
+    if(!skillId){
+        section.style.display="block";
+        await loadMentorOnly();
+        await loadSkills();
+        await loadReviews();
+        return;
+    }
+    else{
+        await loadProfile();
+        await checkBookingStatus();
+        await loadReviews();
+        section.style.display="block";
+    }
+    
 }
 initialize()
 

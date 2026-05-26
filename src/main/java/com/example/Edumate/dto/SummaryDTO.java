@@ -28,4 +28,9 @@ public class SummaryDTO {
     public void setRating(Double rating) {
         this.rating = rating;
     }
+
+    public void setTotalStudents(Long totalLearners) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setTotalStudents'");
+    }
 }

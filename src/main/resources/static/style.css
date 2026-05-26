@@ -1688,3 +1688,23 @@ transition:0.3s;
 .contact-btn:hover{
 transform:translateY(-2px);
 }
+
+.search-hint{
+    position:fixed;
+    bottom:40px;
+    right:40px;
+    background:#5a3ff2;
+    color:white;
+    padding:14px 20px;
+    border-radius:12px;
+    font-weight:600;
+    opacity:0;
+    transform:translateY(20px);
+    transition:.3s;
+    z-index:999;
+}
+
+.search-hint.show{
+    opacity:1;
+    transform:translateY(0);
+}
