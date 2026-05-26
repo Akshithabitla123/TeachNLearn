@@ -170,13 +170,13 @@
                 <input
                         type="text"
                         id="category"
-                        placeholder="Category"
+                        placeholder="Category--(Programming,..)"
                 >
 
                 <input
                         type="text"
                         id="experienceLevel"
-                        placeholder="Experience Level"
+                        placeholder="Experience Level-- (Beginner|Intermediate|Advanced)"
                 >
 
                 <input
@@ -290,8 +290,19 @@
         </button>
 
     </div>
-
 </div>
+<!-- Cancel session overlay -->
+ <div id="cancelOverlay" class="rating-overlay">
+    <div class="rating-popup">
+        <div class="rating-header">
+            <h3>Cancel Session</h3>
+            <button class="close-rating" onclick="closeCancelPopup()">&times;</button>
+        </div>
+        <p>Type: <b>I want to cancel this session</b> to confirm cancellation</p>
+        <input type="text" id="cancelText" placeholder="Enter confirmation text">
+        <button class="cancel-confirm-btn" onclick="confirmCancel()">Confirm cancellation</button>
+    </div>
+ </div>
 </main>
 
 </div>
@@ -382,13 +393,29 @@ document.getElementById("userVerified").innerHTML =
 
     async function updateProfile() {
 
-    const bio = document.getElementById("bio").value;
-    const linkedIn = document.getElementById("linkedin").value;
-    const github = document.getElementById("github").value;
-
+    const bio = document.getElementById("bio").value.trim();
+    const linkedIn = document.getElementById("linkedin").value.trim();
+    const github = document.getElementById("github").value.trim();
+    if(bio!=="" && bio.length>300){
+        alert("Bio cannot exceed 300 characters");
+        return;
+    }
+    const linkedRegex=/^(https?:\/\/)?(www\.)?linkedin\.com\/.*$/;
+    if(linkedIn!=="" && !linkedRegex.test(linkedIn)){
+        alert("Enter valid LinkedIn URL");
+        return;
+    }
+    const githubRegex=/^(https?:\/\/)?(www\.)?github\.com\/.*$/;
+    if(github!=="" && !githubRegex.test(github)){
+        alert("Enter valid Github URL");
+        return;
+    }
     const fileInput = document.getElementById("profileImage");
     const file = fileInput.files[0];
-
+    if(!bio && !linkedIn && !github && !file){
+        alert("Enter atleast one field to update");
+        return;
+    }
     let imageUrl = null;
 
     try {
@@ -425,50 +452,42 @@ document.getElementById("userVerified").innerHTML =
             if (imageUrl) {
                 document.getElementById("profileImageDisplay").src = imageUrl;
             }
-
+            document.getElementById("bio").value="";
+            document.getElementById("linkedin").value="";
+            document.getElementById("github").value="";
+            document.getElementById("profileImage").value="";
             alert("Profile Updated");
             document.getElementById("profileSection").style.display = "none";
             document.getElementById("dashboardSection").style.display = "block";
 
         } else {
-            alert("Update Failed");
+            const error=await response.text();
+            alert(error);
         }
 
-    } catch (error) {
-        console.log(error);
-        alert("Server Error");
+    } catch {
+        alert(text || "Update failed");
     }
 }
     // ADD SKILL
-
     async function addSkill() {
-
-        const title =
-            document.getElementById("title").value;
-
-        const description =
-            document.getElementById("description").value;
-
-        const category =
-            document.getElementById("category").value;
-
-        const experienceLevel =
-            document.getElementById("experienceLevel").value;
-
-        const price =
-            document.getElementById("price").value;
-
+        const title =document.getElementById("title").value.trim();
+        const description = document.getElementById("description").value.trim();
+        const category =document.getElementById("category").value.trim();
+        const experienceLevel =document.getElementById("experienceLevel").value.trim();
+        const price =document.getElementById("price").value;
+        if(!title || !description || !category || !experienceLevel || !price){
+            alert("Fields required");
+            return;
+        }
         try {
-
             const response = await fetch(
                 `http://localhost:9090/skills/${user.id}`,
                 {
                     method: "POST",
-
                     headers: {
                         "Content-Type": "application/json"
                     },
-
                     body: JSON.stringify({
                         title,
                         description,
@@ -478,22 +497,25 @@ document.getElementById("userVerified").innerHTML =
                     })
                 }
             );
-
             if(response.ok) {
-
+                document.getElementById("title").value="";
+                document.getElementById("description").value="";
+                document.getElementById("category").value="";
+                document.getElementById("experienceLevel").value="";
+                document.getElementById("price").value="";
                 alert("Skill Uploaded");
-            document.getElementById("addSkillSection").style.display = "none";
-            document.getElementById("dashboardSection").style.display = "block";
-
+                // document.getElementById("addSkillSection").style.display = "none";
+                // document.getElementById("dashboardSection").style.display = "block";
+                loadMySkills();
+                loadSummary();
             } else {
-
-                alert("Upload Failed");
+                const error=await response.json();
+                const firstError=Object.values(error)[0];
+                alert(firstError);
             }
 
         } catch(error) {
-
             console.log(error);
-
             alert("Server Error");
         }
     }
@@ -579,13 +601,20 @@ document.getElementById("userVerified").innerHTML =
                     </div>
                     `:
                     booking.status==="ACCEPTED"?(!booking.studentCompleted? 
-                    `<button class="complete-btn" onclick="markCompleted(${booking.id})">Session completed?</button>` : 
+                    `<div class="accepted-actions">
+                    <button class="complete-btn" onclick="markCompleted(${booking.id})">Session completed?</button>
+                    <button class="contact-btn" onclick="contactMentor('${booking.mentor.email}','${booking.mentor.name}','${booking.skill.title}')">Contact Mentor</button></div>`: 
                     !booking.mentorCompleted? `<div class="waiting-completion">Mentor confirmation needed</div>`: 
                     `<div class="completed">Session completed</div>`)
                     :
                     booking.status==="COMPLETED"?
                     (booking.reviewed?`<span class="rated-text">Session Rated</span>`:`<button class="rate-btn" onclick="openRating(${booking.id})">Rate Session</button>`)
-                    :`<span class="booking-status"> ${booking.status}</span>`
+                    :booking.status==="PENDING"?
+                    `<div class="pending-actions">
+                        <button class="cancel-btn" onclick="openCancelpopup(${booking.id})">
+                            Cancel Session?</button>
+                    </div>`:                  
+                    `<span class="booking-status"> ${booking.status}</span>`
                     }
                 </div>
                 <p> Mentor :
@@ -791,6 +820,11 @@ async function markCompleted(sessionId){
         alert("Completion failed");
     }
 }
+function contactMentor(email,name,skill){
+    const subject=encodeURIComponent(`Regarding ${skill} session`);
+    const body=encodeURIComponent(`Hi ${name}, I wanted to discuss our session. Thanks`);
+    window.location.href=`mailto:${email}?subject=${subject}&body=${body}`;
+}
 let currentBookingId=null;
 function openRating(bookingId){
     currentBookingId=bookingId;
@@ -862,6 +896,41 @@ function selectRating(value){
         }
     });
 }
+
+let cancelBookingId=null;
+function openCancelpopup(bookingId){
+    cancelBookingId=bookingId;
+    document.getElementById("cancelOverlay").style.display="flex";
+}
+function closeCancelPopup(){
+    cancelBookingId=null;
+    document.getElementById("cancelText").value="";
+    document.getElementById("cancelOverlay").style.display="none";
+}
+async function confirmCancel(){
+    const text=document.getElementById("cancelText").value.trim();
+    if(text!=="I want to cancel this session"){
+        alert("Type exact confirmation text");
+        return;
+    }
+    try{
+        const response=await fetch(`http://localhost:9090/bookings/${cancelBookingId}/cancel`,
+            {
+                method:"PUT"
+            });
+        if(!response.ok){
+            throw new Error();
+        }
+        alert("Session cancelled");
+        closeCancelPopup();
+        loadBookings();
+    }catch(error){
+        console.log(error);
+        alert("Cancellation failed");
+    }
+}
+
+
 </script>
 </body>
 </html>

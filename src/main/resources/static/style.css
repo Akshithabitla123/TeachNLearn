@@ -1635,3 +1635,56 @@ margin-top:10px;
     color:green;
     font-weight:bold;
 }
+
+/* cancellation */
+.pending-actions{
+display:flex;
+gap:10px;
+}
+
+.cancel-btn{
+background:#ff4d4d;
+color:white;
+border:none;
+padding:10px 16px;
+border-radius:8px;
+cursor:pointer;
+}
+
+.cancel-confirm-btn{
+background:#dc2626;
+color:white;
+padding:12px;
+border:none;
+border-radius:8px;
+width:100%;
+margin-top:15px;
+}
+
+#cancelText{
+width:100%;
+padding:12px;
+margin-top:15px;
+border:1px solid #ddd;
+border-radius:8px;
+}
+
+.accepted-actions{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+.contact-btn{
+background:#2563eb;
+color:white;
+border:none;
+padding:10px 16px;
+border-radius:8px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.contact-btn:hover{
+transform:translateY(-2px);
+}

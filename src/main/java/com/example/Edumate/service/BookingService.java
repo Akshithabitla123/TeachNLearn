@@ -112,5 +112,12 @@ public class BookingService {
     public Booking getExistingBooking(Long studentId,Long skillId){
         return bookingRepo.findByStudentIdAndSkillId(studentId, skillId).orElse(null);
     }
+    //cancel booking
+    public Booking cancelBooking(Long bookingId){
+        Booking booking=bookingRepo.findById(bookingId)
+                .orElseThrow(()->new RuntimeException("Booking not found"));
+        booking.setStatus(Status.CANCELLED);
+        return bookingRepo.save(booking);
+    }
 
 }

@@ -61,4 +61,9 @@ public class BookingController {
     public Booking checkBooking(@RequestParam Long studentId,@RequestParam Long skillId){
         return bookingService.getExistingBooking(studentId, skillId);
     }
+    //cancel booking
+    @PutMapping("/{bookingId}/cancel")
+    public Booking cancelBooking(@PathVariable Long bookingId){
+        return bookingService.cancelBooking(bookingId);
+    }
 }
