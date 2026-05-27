@@ -105,12 +105,14 @@
 </div>
 
 <script>
+    let isSelfProfile=false;
+    //block previous daytes form today
+    document.getElementById("sessionDate").min =new Date().toISOString().slice(0, 16);
     const user=JSON.parse(localStorage.getItem("user"));
     if(!user){
         alert("Login required");
         window.location.href="login.html";
     }
-
     const params =
         new URLSearchParams(window.location.search);
 
@@ -195,7 +197,10 @@
             console.log(skill);
 
             const user = skill.userDTO;
-
+            const loggedUser=JSON.parse(localStorage.getItem("user"));
+            if(loggedUser && loggedUser.id==user.id){
+                isSelfProfile=true;
+            }
             // USER INFO
 
             document.getElementById("mentorImage").src =
@@ -233,7 +238,11 @@
 
             document.getElementById("skillPrice").innerHTML =
                 `<i class="fa-solid fa-indian-rupee-sign"></i> ${skill.price}`;
-
+            const container=document.getElementById("bookingButtonContainer");
+            if(isSelfProfile){
+                container.innerHTML=`
+                <button class="book-btn" disabled>You cannot book your own session</button>`
+            }
         }
         catch(error){
 
@@ -365,18 +374,21 @@ async function bookSession(){
             updateBookingUI(booking.id);
         }
         else{
-            alert("Booking failed");
+            const errorText=await response.json();
+            closeBookingModal();
+            throw new Error(errorText.error);
+            
         }
     }
     catch(error){
         console.log(error);
-        alert("Something went wrong");
+        alert(error.message);
     }
 }
     function updateBookingUI(bookingId){
     const container=document.getElementById("bookingButtonContainer");
-     container.innerHTML = `
-
+     
+    container.innerHTML = `
     <div class="booking-buttons">
         <button
             class="booked-btn"
@@ -461,6 +473,8 @@ async function checkBookingStatus(){
         if(!response.ok){
             return;
         }
+        const text=await response.text();
+        if(!text)return;
         const booking=await response.json();
         if(booking && booking.id){
             updateBookingUI(booking.id);

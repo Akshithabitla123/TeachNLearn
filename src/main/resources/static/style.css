@@ -1351,18 +1351,12 @@ footer{
     border-radius:10px;
     cursor:pointer;
 }
-.close-btn{
-
+.close-btn-res{
     background:#ef4444;
-
     color:white;
-
     border:none;
-
     padding:12px 22px;
-
     border-radius:10px;
-
     cursor:pointer;
 }
 

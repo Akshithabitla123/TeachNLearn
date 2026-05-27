@@ -3,6 +3,7 @@ package com.example.Edumate.controller;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,8 +17,6 @@ import com.example.Edumate.model.Booking;
 import com.example.Edumate.model.RescheduleRequest;
 import com.example.Edumate.service.RescheduleReqService;
 
-import jakarta.validation.Valid;
-
 
 @RestController
 @RequestMapping("/reschedule")
@@ -30,7 +29,9 @@ public class RescheduleReqController {
     }
     //mentor gives slots
     @PutMapping("/propose/{id}")
-    public RescheduleRequest propose(@PathVariable Long id, @Valid @RequestParam LocalDateTime slot1,@Valid @RequestParam LocalDateTime slot2,@Valid @RequestParam LocalDateTime slot3){
+    public RescheduleRequest propose(@PathVariable Long id,@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime slot1,
+    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime slot2,
+    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime slot3){
         return service.proposeSlots(id, slot1, slot2, slot3);
     }
     //get the slots

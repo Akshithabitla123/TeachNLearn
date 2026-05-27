@@ -32,6 +32,11 @@ public class AdminService {
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
+    //get specific user
+    public UserDTO getUserById(Long userId){
+        User user=userRepo.findById(userId).orElseThrow(()->new RuntimeException("User not found"));
+        return mapToDTO(user);
+    }
 
     //verify user
     public String verifyUser(Long userId){

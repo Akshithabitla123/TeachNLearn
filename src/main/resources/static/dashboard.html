@@ -223,7 +223,7 @@
             </button>
 
             <button
-            class="close-btn" type="button"
+            class="close-btn-res" type="button"
             onclick="closeReschedule()">
 
                 Cancel
@@ -284,6 +284,9 @@
 
 <script>
 
+document.getElementById("slot1").min =new Date().toISOString().slice(0, 16);
+document.getElementById("slot2").min =new Date().toISOString().slice(0, 16);
+document.getElementById("slot3").min =new Date().toISOString().slice(0, 16);
     const user =
         JSON.parse(localStorage.getItem("user"));
 
@@ -424,6 +427,7 @@ document.getElementById("userVerified").innerHTML =
         if (response.ok) {
 
             localStorage.setItem("user", JSON.stringify(data));
+            window.location.reload();
             if (imageUrl) {
                 document.getElementById("profileImageDisplay").src = imageUrl;
             }
@@ -440,8 +444,8 @@ document.getElementById("userVerified").innerHTML =
             alert(error);
         }
 
-    } catch {
-        alert(text || "Update failed");
+    } catch(error) {
+        alert(error.message || "Update failed");
     }
 }
     // ADD SKILL
@@ -690,11 +694,11 @@ async function loadSessions(){
 }
 let selectedBookingId=null;
 async function openReschedule(bookingId){
-    selectedBookingId=bookingId;
     await fetch(`http://localhost:9090/reschedule/create/${bookingId}`,
         {
             method:"POST"
         });
+        selectedBookingId=bookingId;
     document.getElementById("rescheduleOverlay").style.display="flex";
 }
 async function sendReschedule(){
@@ -721,7 +725,7 @@ async function sendReschedule(){
                 
     } catch (error) {
         console.log(error);
-        alert("Cannot be rescheduled");
+        alert("Check slots selection");
     }
 }
 

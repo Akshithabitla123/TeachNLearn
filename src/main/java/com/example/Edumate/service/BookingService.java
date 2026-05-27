@@ -37,6 +37,9 @@ public class BookingService {
         if(existingBooking.isPresent()){
             throw new RuntimeException("Session already booked");
         }
+        if(!mentor.isVerified()){
+            throw new RuntimeException("Mentor is not verified");
+        }
         Booking booking=new Booking();
         booking.setStudent(student);
         booking.setMentor(mentor);

@@ -1,12 +1,20 @@
 package com.example.Edumate.controller;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.Edumate.dto.AdminLoginDTO;
 import com.example.Edumate.dto.UserDTO;
 import com.example.Edumate.service.AdminService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @CrossOrigin("*")
 @RestController
@@ -23,6 +31,11 @@ public class AdminController {
     @GetMapping("/users")
     public List<UserDTO> getAllUsers(){
         return adminService.getAllUsers();
+    }
+    //get specific user
+    @GetMapping("/user/{id}")
+    public UserDTO getUserById(@PathVariable Long id){
+        return adminService.getUserById(id);
     }
     //verify user
     @PutMapping("/verify/{id}")
