@@ -2,12 +2,16 @@ package com.example.Edumate.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.Edumate.Enum.Status;
 import com.example.Edumate.dto.BookingDTO;
+import com.example.Edumate.dto.BookingResponseDTO;
+import com.example.Edumate.dto.SkillResponseDTO;
+import com.example.Edumate.dto.UserDTO;
 import com.example.Edumate.model.Booking;
 import com.example.Edumate.model.Skill;
 import com.example.Edumate.model.User;
@@ -25,15 +29,55 @@ public class BookingService {
     private SkillRepo skillRepo;
     @Autowired
     private RescheduleReqService service;
+    private SkillResponseDTO mapSkill(Skill skill){
+
+        SkillResponseDTO dto = new SkillResponseDTO(
+        skill.getId(),
+        skill.getTitle(),
+        skill.getDescription(),
+        skill.getCategory(),
+        skill.getExperienceLevel(),
+        skill.getPrice(),
+        null
+        );
+        return dto;
+    }
+    private UserDTO mapUser(User user){
+    return new UserDTO(
+            user.getId(),
+            user.getName(),
+            user.getEmail(),
+            user.getBio(),
+            user.getRating(),
+            user.getProfileImage(),
+            user.getLinkedIn(),
+            user.getGithub(),
+            user.isVerified()
+    );
+}
+    private BookingResponseDTO mapToDTO(Booking booking) {
+        BookingResponseDTO dto=new BookingResponseDTO();
+        dto.setId(booking.getId());
+        dto.setMentor(mapUser(booking.getMentor()));
+        dto.setStudent(mapUser(booking.getStudent())); 
+        dto.setSkill(mapSkill(booking.getSkill()));
+        dto.setSessionDate(booking.getSessionDate());
+        dto.setStatus(booking.getStatus());
+        dto.setMessage(booking.getMessage());
+        dto.setMentorCompleted(booking.isMentorCompleted());
+        dto.setStudentCompleted(booking.isStudentCompleted());
+        dto.setReviewed(booking.isReviewed());
+        return dto;
+    }
     //create booking
-    public Booking createBooking(BookingDTO dto){
+    public BookingResponseDTO createBooking(BookingDTO dto){
         User student=userRepo.findById(dto.getStudentId()).
                 orElseThrow(()->new RuntimeException("Student Not found"));
         User mentor=userRepo.findById(dto.getMentorId())
                 .orElseThrow(()->new RuntimeException("Mentor not found"));
         Skill skill=skillRepo.findById(dto.getSkillId())
                 .orElseThrow(()->new RuntimeException("Skill not found"));
-        Optional<Booking> existingBooking=bookingRepo.findByStudentIdAndSkillId(student.getId(), skill.getId());
+        Optional<Booking> existingBooking=bookingRepo.findFirstByStudentIdAndSkillIdOrderBySessionDate(student.getId(), skill.getId());
         if(existingBooking.isPresent()){
             throw new RuntimeException("Session already booked");
         }
@@ -47,20 +91,26 @@ public class BookingService {
         booking.setSessionDate(dto.getSessionDate());
         booking.setMessage(dto.getMessage());
         booking.setStatus(Status.PENDING);
-        return bookingRepo.save(booking);
+        return mapToDTO(bookingRepo.save(booking));
     }
     //get bookings for mentor
-    public List<Booking> getMentorBookings(Long mentorId){
-        return bookingRepo.findByMentorId(mentorId);
+    public List<BookingResponseDTO> getMentorBookings(Long mentorId){
+        return bookingRepo.findByMentorId(mentorId)
+        .stream()
+        .map(this::mapToDTO)
+        .collect(Collectors.toList());
     }
     //get bookings by a student
-    public List<Booking> getStudentBookings(Long studentId){
-        return bookingRepo.findByStudentId(studentId);
+    public List<BookingResponseDTO> getStudentBookings(Long studentId){
+        return bookingRepo.findByStudentId(studentId)
+        .stream()
+        .map(this::mapToDTO)
+        .collect(Collectors.toList());
     }
     //update the status of the session
     //accepted and rejected-> mentor
     //completed should be by both mentor and student
-    public Booking updateStatus(Long bookingId,Long userId,Status status){
+    public BookingResponseDTO updateStatus(Long bookingId,Long userId,Status status){
         Booking booking=bookingRepo.findById(bookingId)
                 .orElseThrow(()->new RuntimeException("Booking not found"));
         Long mentorId=booking.getMentor().getId();
@@ -81,9 +131,9 @@ public class BookingService {
         else if(status==Status.RESCHEDULE_REQUESTED){
             service.createRequest(bookingId);
         }
-        return bookingRepo.save(booking);
+        return mapToDTO(bookingRepo.save(booking));
     }
-    public Booking markCompleted(Long bookingId,Long userId){
+    public BookingResponseDTO markCompleted(Long bookingId,Long userId){
         Booking booking=bookingRepo.findById(bookingId)
                 .orElseThrow(()->new RuntimeException("Booking not found"));
         if(booking.getStatus()!=Status.ACCEPTED){
@@ -103,24 +153,27 @@ public class BookingService {
         if(booking.isMentorCompleted() && booking.isStudentCompleted()){
             booking.setStatus(Status.COMPLETED);
         }
-        return bookingRepo.save(booking);
+        return mapToDTO(bookingRepo.save(booking));
     }
     //get booking details
-    public Booking getBookingById(Long bookingId){
-        return bookingRepo.findById(bookingId)
+    public BookingResponseDTO getBookingById(Long bookingId){
+        Booking booking= bookingRepo.findById(bookingId)
                 .orElseThrow(()->new RuntimeException("Booking not found"));
+        return mapToDTO(booking);
     }
-
-    //get existing booking of user
-    public Booking getExistingBooking(Long studentId,Long skillId){
-        return bookingRepo.findByStudentIdAndSkillId(studentId, skillId).orElse(null);
+    //get existing booking
+    public BookingResponseDTO getExistingBooking(Long studentId,Long skillId){
+       Booking booking= bookingRepo.findFirstByStudentIdAndSkillIdOrderBySessionDate(studentId, skillId)
+        .orElse(null);
+        if(booking==null)return null;
+        return mapToDTO(booking);
     }
     //cancel booking
-    public Booking cancelBooking(Long bookingId){
+    public BookingResponseDTO cancelBooking(Long bookingId){
         Booking booking=bookingRepo.findById(bookingId)
                 .orElseThrow(()->new RuntimeException("Booking not found"));
         booking.setStatus(Status.CANCELLED);
-        return bookingRepo.save(booking);
+        return mapToDTO(bookingRepo.save(booking));
     }
 
 }

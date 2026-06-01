@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Edumate.Enum.Status;
 import com.example.Edumate.dto.BookingDTO;
-import com.example.Edumate.model.Booking;
+import com.example.Edumate.dto.BookingResponseDTO;
 import com.example.Edumate.service.BookingService;
 
 import jakarta.validation.Valid;
@@ -28,42 +28,42 @@ public class BookingController {
     @Autowired
     private BookingService bookingService;
     @PostMapping
-    public Booking createBooking(@Valid @RequestBody BookingDTO dto){
+    public BookingResponseDTO createBooking(@Valid @RequestBody BookingDTO dto){
         return bookingService.createBooking(dto);
     }
     //get bookings of mentor
     @GetMapping("/mentor/{mentorId}")
-    public List<Booking> getMentorBookings(@PathVariable Long mentorId){
+    public List<BookingResponseDTO> getMentorBookings(@PathVariable Long mentorId){
         return bookingService.getMentorBookings(mentorId);
     }
     //get bookings of student
     @GetMapping("/student/{studentId}")
-    public List<Booking> getStudentBookings(@PathVariable Long studentId){
+    public List<BookingResponseDTO> getStudentBookings(@PathVariable Long studentId){
         return bookingService.getStudentBookings(studentId);
     }
     //get details of that booking
     @GetMapping("/{bookingId}")
-    public Booking getBookingById(@PathVariable Long bookingId){
+    public BookingResponseDTO getBookingById(@PathVariable Long bookingId){
         return bookingService.getBookingById(bookingId);
     }
     //update status (accepted,rejected) by mentor
     @PutMapping("/{bookingId}/status")
-    public Booking updateStatus(@PathVariable Long bookingId, @RequestParam Long userId, @RequestParam Status status){
+    public BookingResponseDTO updateStatus(@PathVariable Long bookingId, @RequestParam Long userId, @RequestParam Status status){
         return bookingService.updateStatus(bookingId,userId,status);
     }
     //mark session completed
     @PutMapping("/{bookingId}/complete")
-    public Booking markCompleted(@PathVariable Long bookingId, @RequestParam Long userId){
+    public BookingResponseDTO markCompleted(@PathVariable Long bookingId, @RequestParam Long userId){
         return bookingService.markCompleted(bookingId,userId);
     }
-    //get existing booking of user
-    @GetMapping("/check")
-    public Booking checkBooking(@RequestParam Long studentId,@RequestParam Long skillId){
-        return bookingService.getExistingBooking(studentId, skillId);
-    }
+   //get status of current booking
+   @GetMapping("/check")
+   public BookingResponseDTO checkBooking(@RequestParam Long studentId,@RequestParam Long skillId){
+    return bookingService.getExistingBooking(studentId,skillId);
+   }
     //cancel booking
     @PutMapping("/{bookingId}/cancel")
-    public Booking cancelBooking(@PathVariable Long bookingId){
+    public BookingResponseDTO cancelBooking(@PathVariable Long bookingId){
         return bookingService.cancelBooking(bookingId);
     }
 }

@@ -7,10 +7,9 @@ import org.springframework.stereotype.Repository;
 
 import com.example.Edumate.model.Booking;
 import com.example.Edumate.model.Rating;
-import com.example.Edumate.model.User;
 
 @Repository
 public interface RatingRepo extends JpaRepository<Rating,Long>{
     boolean existsByBooking(Booking booking);
-    List<Rating> findByMentor(User mentor);
+    List<Rating> findByMentorId(Long mentorId);
 }

@@ -25,8 +25,8 @@ public class SkillController {
     @Autowired
     private SkillService skillService;
     @PostMapping("/{userId}")
-    public Skill createSkill(@PathVariable Long userId,@Valid @RequestBody Skill skill){
-        return skillService.createSkill(userId, skill);
+    public String createSkill(@PathVariable Long userId,@Valid @RequestBody Skill skill){
+         return skillService.createSkill(userId, skill);
     }
     //get all skills
     @GetMapping
@@ -35,7 +35,7 @@ public class SkillController {
     }
     //get skill by id
     @GetMapping("/{id}")
-    public Skill getSkillById(@PathVariable Long id){
+    public SkillResponseDTO getSkillById(@PathVariable Long id){
         return skillService.getSkillById(id);
     }
     //search skill
@@ -63,11 +63,10 @@ public class SkillController {
     public SkillResponseDTO getSkillOfUser(@PathVariable Long userId,@PathVariable Long skillId){
         return skillService.getSkillOfUser(userId, skillId);
     }
-    //get random skills to display in trneding skills section
+    //get random skills to display in trending skills section
     @GetMapping("/random")
-    public List<Skill> getRandomSkills(){
-        List<Skill> skills=skillService.getRandomSkills();
+    public List<SkillResponseDTO> getRandomSkills(){
+        List<SkillResponseDTO> skills=skillService.getRandomSkills();
         return skills;
-
     }
 }

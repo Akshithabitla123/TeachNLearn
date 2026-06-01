@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.Edumate.Enum.Status;
 import com.example.Edumate.dto.RatingDTO;
+import com.example.Edumate.dto.ReviewResponseDTO;
 import com.example.Edumate.model.Booking;
 import com.example.Edumate.model.Rating;
 import com.example.Edumate.model.User;
@@ -22,7 +23,7 @@ public class RatingService {
     private BookingRepo bookingRepo;
     @Autowired
     private UserRepo userRepo;
-    public Rating addRating(Long studentId,RatingDTO dto){
+    public String addRating(Long studentId,RatingDTO dto){
         Booking booking=bookingRepo.findById(dto.getBookingId()).
                 orElseThrow(()->new RuntimeException("Booking Not found"));
         if(booking.getStatus()!=Status.COMPLETED){
@@ -41,19 +42,21 @@ public class RatingService {
         updateMentorRating(booking.getMentor());
         booking.setReviewed(true);
         bookingRepo.save(booking);
-        return rating;
+        return "Rating added Successfully";
     }
     public void updateMentorRating(User mentor){
-        List<Rating> ratings=ratingRepo.findByMentor(mentor);
+        List<Rating> ratings=ratingRepo.findByMentorId(mentor.getId());
         double avg=ratings.stream().mapToInt(Rating::getStars).average().orElse(0);
         mentor.setRating(avg);
         userRepo.save(mentor);
     }
     //find ratings by mentorId
-    public List<Rating> getMentorRatings(Long mentorId) {
-        User mentor=userRepo.findById(mentorId).
-                orElseThrow(()->new RuntimeException("Mentor Not found"));
-        return ratingRepo.findByMentor(mentor);
+    public List<ReviewResponseDTO> getMentorRatings(Long mentorId) {
+        List<Rating> list=ratingRepo.findByMentorId(mentorId);
+        return list.stream()
+        .map(rating->new ReviewResponseDTO(rating.getStudent().getName(),rating.getStars(),rating.getComment()))
+        .toList();
+            
     }
 
 }

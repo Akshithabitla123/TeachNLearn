@@ -312,7 +312,7 @@ async function loadReviews(){
                 <div class="review-top">
                     <div class="review-user">
                         <i class="fa-solid fa-circle-user"></i>
-                        <span>${ review.student.name}</span>
+                        <span>${ review.learnerName}</span>
                     </div>
                     <div class="review-stars">${stars}</div>
                 </div>
@@ -343,6 +343,7 @@ async function bookSession(){
         alert("Please login first");
         return;
     }
+    
     const sessionDate=document.getElementById("sessionDate").value;
     const message=document.getElementById("bookingMessage").value;
     if(sessionDate===""){
@@ -406,6 +407,15 @@ async function bookSession(){
     </div>
     `;
 }
+ function formatSlot(slot){
+            const date=new Date(slot);
+            const day=String(date.getDate()).padStart(2,"0");
+            const month=String(date.getMonth()+1).padStart(2,"0");
+            const year=date.getFullYear();
+            const hours=String(date.getHours()).padStart(2,"0");
+            const minutes=String(date.getMinutes()).padStart(2,"0");
+            return `${day}/${month}/${year} ${hours}:${minutes}`;
+}
 async function viewBooking(bookingId){
     try {
         const response=await fetch(`http://localhost:9090/bookings/${bookingId}`);
@@ -431,7 +441,7 @@ async function viewBooking(bookingId){
 
         <div class="detail-row">
             <span>Date</span>
-            <p>${booking.sessionDate}</p>
+            <p>${formatSlot(booking.sessionDate)}</p>
         </div>
 
         <div class="detail-row">
@@ -465,6 +475,7 @@ async function viewBooking(bookingId){
 
 async function checkBookingStatus(){
     const user=JSON.parse(localStorage.getItem("user"));
+    
     if(!user){
         return;
     }
@@ -473,8 +484,6 @@ async function checkBookingStatus(){
         if(!response.ok){
             return;
         }
-        const text=await response.text();
-        if(!text)return;
         const booking=await response.json();
         if(booking && booking.id){
             updateBookingUI(booking.id);

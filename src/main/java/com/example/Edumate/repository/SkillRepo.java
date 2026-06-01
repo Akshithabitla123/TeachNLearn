@@ -13,7 +13,7 @@ public interface SkillRepo extends JpaRepository<Skill,Long> {
     //search skills by title
     List<Skill> findByTitleContainingIgnoreCase(String keyword);
     //find skills by category
-    List<Skill> findByCategoryIgnoreCase(String experienceLevel);
+    List<Skill> findByCategoryIgnoreCase(String category);
     //find skills by  experienceLevel
     List<Skill> findByExperienceLevelIgnoreCase(String experienceLevel);
     //find skills of a specific user

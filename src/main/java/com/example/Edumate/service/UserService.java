@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.Edumate.Enum.Status;
 import com.example.Edumate.dto.SummaryDTO;
 import com.example.Edumate.dto.UpdateProfileDTO;
 import com.example.Edumate.dto.UserDTO;
@@ -82,7 +83,7 @@ public class UserService {
         SummaryDTO dto=new SummaryDTO();
         int totalSkills=skillRepo.countByUserId(id);
         dto.setTotalSkills(totalSkills);
-        int totalLearners=bookingRepo.countCompletedLearners(user.getId());
+        int totalLearners=bookingRepo.countCompletedLearners(user.getId(),Status.COMPLETED);
         dto.setTotalStudents(totalLearners);//set to some random
         dto.setRating(user.getRating()==null?0: user.getRating());
         return dto;

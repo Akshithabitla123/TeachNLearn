@@ -21,12 +21,13 @@ public class SkillService {
     private UserRepo userRepo;
 
     //create skill
-    public Skill createSkill(Long userId, Skill skill){
+    public String createSkill(Long userId, Skill skill){
         //find user
         User user=userRepo.findById(userId).orElseThrow(()->new RuntimeException("User not found"));
         //attach user to skill
         skill.setUser(user);
-        return skillRepo.save(skill);
+        skillRepo.save(skill);
+        return "Success";
     }
     public SkillResponseDTO mapToDTO(Skill skill){
         UserDTO userDTO=new UserDTO(
@@ -46,7 +47,6 @@ public class SkillService {
                 skill.getCategory(),
                 skill.getExperienceLevel(),
                 skill.getPrice(),
-                skill.isVerified(),
                 userDTO
         );
     }
@@ -55,8 +55,9 @@ public class SkillService {
         return skillRepo.findAll().stream().map(this::mapToDTO).toList();
     }
     //get skill by id
-    public Skill getSkillById(Long id){
-        return skillRepo.findById(id).orElseThrow(()->new RuntimeException("Skill not found"));
+    public SkillResponseDTO getSkillById(Long id){
+        Skill skill= skillRepo.findById(id).orElseThrow(()->new RuntimeException("Skill not found"));
+        return mapToDTO(skill);
     }
     //search skills
     public List<SkillResponseDTO> searchSkills(String keyword) {
@@ -101,9 +102,9 @@ public class SkillService {
         return mapToDTO(skill);
     }
     //get random skills 
-    public List<Skill> getRandomSkills(){
+    public List<SkillResponseDTO> getRandomSkills(){
         List<Skill> skills=skillRepo.findAll();
         Collections.shuffle(skills);
-        return skills.stream().limit(8).toList();
+        return skills.stream().map(this::mapToDTO).limit(8).toList();
     }
 }

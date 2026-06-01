@@ -7,8 +7,11 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class BookingDTO {
+    @NotNull
     private Long studentId;
+    @NotNull
     private Long mentorId;
+    @NotNull
     private Long skillId;
     @NotNull(message="Session date is required")
     @Future(message="session date must be in future")

@@ -1,31 +1,26 @@
 package com.example.Edumate.dto;
 
-public class SkillResponseDTO {
-    private Long id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
+
+public class SkillRequestDTO {
+    @NotBlank(message="Title required")
+    @Size(min=2,max=50,message="Title must be 2-50 characters")
     private String title;
+    @NotBlank(message="Description required")
+    @Size(min=10,max=1000,message="Description must be 10-1000 characters")
     private String description;
-    private String category ;
+    @NotBlank(message="Category required")
+    private String category ;//(programming,design,..)
+    @NotBlank(message="Experience Level required")
+    @Pattern(regexp="Beginner|Intermediate|Advanced",message="Invalid Experience level")
     private String experienceLevel;
+    @NotNull(message="Price required")
+    @PositiveOrZero(message="Price cannot be negative")
     private Double price;
-    private UserDTO userDTO;
-
-    public SkillResponseDTO(Long id, String title, String description, String category, String experienceLevel, Double price, UserDTO userDTO) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.category = category;
-        this.experienceLevel = experienceLevel;
-        this.price = price;
-        this.userDTO = userDTO;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getTitle() {
         return title;
@@ -65,12 +60,5 @@ public class SkillResponseDTO {
 
     public void setPrice(Double price) {
         this.price = price;
-    }
-
-    public UserDTO getUserDTO() {
-        return userDTO;
-    }
-    public void setUserDTO(UserDTO userDTO) {
-        this.userDTO = userDTO;
     }
 }

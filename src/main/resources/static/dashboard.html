@@ -536,7 +536,6 @@ document.getElementById("userVerified").innerHTML =
     }
 
 
-
     //load summary of the user
     async function loadSummary(){
         try{
@@ -743,7 +742,7 @@ loadSummary();
             const hours=String(date.getHours()).padStart(2,"0");
             const minutes=String(date.getMinutes()).padStart(2,"0");
             return `${day}/${month}/${year} ${hours}:${minutes}`;
-        }
+}
 async function loadRescheduleSlots(bookingId){
     try{
         const response=await fetch(`http://localhost:9090/reschedule/slots/${bookingId}`);

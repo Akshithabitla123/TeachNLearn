@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.Edumate.model.Booking;
-import com.example.Edumate.model.RescheduleRequest;
+import com.example.Edumate.dto.RescheduleDTO;
 import com.example.Edumate.service.RescheduleReqService;
 
 
@@ -24,29 +23,29 @@ public class RescheduleReqController {
     @Autowired
     private RescheduleReqService service;
     @PostMapping("/create/{bookingId}")
-    public RescheduleRequest create(@PathVariable Long bookingId){
+    public RescheduleDTO create(@PathVariable Long bookingId){
         return service.createRequest(bookingId);
     }
     //mentor gives slots
     @PutMapping("/propose/{id}")
-    public RescheduleRequest propose(@PathVariable Long id,@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime slot1,
+    public RescheduleDTO propose(@PathVariable Long id,@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime slot1,
     @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime slot2,
     @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime slot3){
         return service.proposeSlots(id, slot1, slot2, slot3);
     }
     //get the slots
     @GetMapping("/slots/{bookingId}")
-    public RescheduleRequest getSlots(@PathVariable Long bookingId){
+    public RescheduleDTO getSlots(@PathVariable Long bookingId){
         return service.getSlots(bookingId);
     }
     //student accepts proposal
     @PutMapping("/accept/{id}")
-    public Booking accept(@PathVariable Long id,@RequestParam LocalDateTime slot){
+    public String accept(@PathVariable Long id,@RequestParam LocalDateTime slot){
         return service.acceptSlot(id, slot);
     }
     //reject
     @DeleteMapping("/reject/{id}")
-    public RescheduleRequest reject(@PathVariable Long id){
+    public RescheduleDTO reject(@PathVariable Long id){
         return service.rejectRequest(id);
     }       
 }

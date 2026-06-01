@@ -2,6 +2,7 @@ package com.example.Edumate.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,17 +14,17 @@ import jakarta.persistence.OneToOne;
 public class Rating {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private int stars;
-    @Column(length=100)
+    @Column(length=200)
     private String comment;
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="student_id")
     private User student;
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="mentor_id")
     private User mentor;
-    @OneToOne
+    @OneToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="booking_id")
     private Booking booking;
 

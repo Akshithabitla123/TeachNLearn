@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Edumate.dto.RatingDTO;
-import com.example.Edumate.model.Rating;
+import com.example.Edumate.dto.ReviewResponseDTO;
 import com.example.Edumate.service.RatingService;
 
 import jakarta.validation.Valid;
@@ -25,12 +25,12 @@ public class RatingController {
     private RatingService ratingService;
     //add rating
     @PostMapping("/{studentId}")
-    public Rating addRating(@PathVariable Long studentId,@Valid @RequestBody RatingDTO dto){
+    public String addRating(@PathVariable Long studentId,@Valid @RequestBody RatingDTO dto){
         return ratingService.addRating(studentId,dto);
     }
     //get mentor ratings
     @GetMapping("/mentor/{mentorId}")
-    public List<Rating> getMentorRating(@PathVariable Long mentorId){
+    public List<ReviewResponseDTO> getMentorRating(@PathVariable Long mentorId){
         return ratingService.getMentorRatings(mentorId);
     }
 }
