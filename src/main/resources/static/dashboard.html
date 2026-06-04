@@ -298,7 +298,6 @@ document.getElementById("slot3").min =new Date().toISOString().slice(0, 16);
     // Welcome Text
     document.getElementById("welcomeText")
     .innerText = `Welcome Back, ${user.name}`;
-<!--    profile section-->
     document.getElementById("userName")
 .innerText = user.name;
 
@@ -314,13 +313,22 @@ document.getElementById("profileImageDisplay")
     user.profileImage ||
     "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
 
-document.getElementById("linkedinLink")
-.href =
-    user.linkedIn || alert("Add Linked Profile");
+const linkedInLink = document.getElementById("linkedinLink");
+const githubLink = document.getElementById("githubLink");
 
-document.getElementById("githubLink")
-.href =
-    user.github || alert("Add github profile");
+linkedInLink.href = user.linkedIn || "#";
+linkedInLink.title = user.linkedIn? "Open LinkedIn": "Profile not added"
+if(!user.linkedIn){
+    linkedInLink.onclick = (e) => e.preventDefault();
+    linkedInLink.style.cursor="not-allowed";
+}
+githubLink.href = user.github || "#";
+githubLink.title = user.github? "Open Github": "Profile not added";
+
+if(!user.github){
+    githubLink.onclick = (e) => e.preventDefault();
+    githubLink.style.cursor="not-allowed";
+}
 
 document.getElementById("userRating").innerHTML =
     `<i class="fa-solid fa-star"></i> Rating: ${user.rating ?? "Not Rated"}`;
@@ -348,8 +356,7 @@ document.getElementById("userVerified").innerHTML =
         document.getElementById("myBookings").style.display = "none";
         document.getElementById("mySessions").style.display = "none";
 
-        document.getElementById(sectionId)
-            .style.display = "block";
+        document.getElementById(sectionId).style.display = "block";
         if(sectionId==="myBookings"){
             loadBookings()
         }
@@ -510,12 +517,15 @@ document.getElementById("userVerified").innerHTML =
             );
 
             const skills = await response.json();
-
+            
             const container =
                 document.getElementById("mySkillsContainer");
 
             container.innerHTML = "";
-
+            if(skills.length===0){
+            container.innerHTML=`<h3>Add skills to display</h3>`;
+            return;
+        }
             skills.forEach(skill => {
 
                 container.innerHTML += `

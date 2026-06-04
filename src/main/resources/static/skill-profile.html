@@ -129,119 +129,52 @@
 
     try{
 
-        const response=
-        await fetch(
-        `http://localhost:9090/users/${userId}`
-        );
+        const response=await fetch(`http://localhost:9090/users/${userId}`);
+        const mentor= await response.json();
+        document.getElementById("mentorImage").src=mentor.profileImage ||"https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
 
-        const mentor=
-        await response.json();
-
-        document.getElementById(
-        "mentorImage"
-        ).src=
-        mentor.profileImage ||
-        "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-
-        document.getElementById(
-        "mentorName"
-        ).innerText=
-        mentor.name;
-
-        document.getElementById(
-        "mentorBio"
-        ).innerText=
-        mentor.bio ||
-        "No bio available";
-
-        document.getElementById(
-        "mentorRating"
-        ).innerText=
-        mentor.rating || 0;
-
-        document.getElementById(
-        "linkedinLink"
-        ).href=
-        mentor.linkedIn || "#";
-
-        document.getElementById(
-        "githubLink"
-        ).href=
-        mentor.github || "#";
-
+        document.getElementById("mentorName").innerText=mentor.name;
+        document.getElementById("mentorBio").innerText=mentor.bio ||"No bio available";
+        document.getElementById("mentorRating").innerText=mentor.rating || "Not Rated"
+        document.getElementById("linkedinLink").href=mentor.linkedIn || "#";
+        document.getElementById("githubLink").href=mentor.github || "#";
     }
     catch(error){
-
         console.log(error);
-
-        alert(
-        "Failed to load mentor"
-        );
+        alert("Failed to load mentor");
     }
 }
     async function loadProfile(){
 
         try{
 
-            const response = await fetch(
-                `http://localhost:9090/skills/user/${userId}/skill/${skillId}`
-            );
-
+            const response = await fetch(`http://localhost:9090/skills/user/${userId}/skill/${skillId}`);
             if(!response.ok){
-
                 throw new Error("API Failed");
             }
-
             const skill = await response.json();
-
             console.log(skill);
-
             const user = skill.userDTO;
             const loggedUser=JSON.parse(localStorage.getItem("user"));
             if(loggedUser && loggedUser.id==user.id){
                 isSelfProfile=true;
             }
             // USER INFO
-
-            document.getElementById("mentorImage").src =
-<!--                user.profileImage ||-->
-                "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-
-            document.getElementById("mentorName").innerText =
-                user.name;
-
-            document.getElementById("mentorBio").innerText =
-                user.bio || "No bio available";
-
-            document.getElementById("mentorRating").innerText =
-                user.rating || 0;
-
-            document.getElementById("linkedinLink").href =
-                user.linkedIn || "#";
-
-            document.getElementById("githubLink").href =
-                user.github || "#";
-
+            document.getElementById("mentorImage").src =user.profileImage ||"https://cdn-icons-png.flaticon.com/512/149/149071.png";
+            document.getElementById("mentorName").innerText =user.name;
+            document.getElementById("mentorBio").innerText =user.bio || "No bio available";
+            document.getElementById("mentorRating").innerText = user.rating || "Not Rated";
+            document.getElementById("linkedinLink").href = user.linkedIn || "#";
+            document.getElementById("githubLink").href = user.github || "#";
             // SKILL INFO
-
-            document.getElementById("skillTitle").innerText =
-                skill.title;
-
-            document.getElementById("skillDescription").innerText =
-                skill.description;
-
-            document.getElementById("skillCategory").innerText =
-                "Category : " + skill.category;
-
-            document.getElementById("skillLevel").innerText =
-                "Level : " + skill.experienceLevel;
-
-            document.getElementById("skillPrice").innerHTML =
-                `<i class="fa-solid fa-indian-rupee-sign"></i> ${skill.price}`;
+            document.getElementById("skillTitle").innerText = skill.title;
+            document.getElementById("skillDescription").innerText =skill.description;
+            document.getElementById("skillCategory").innerText = "Category : " + skill.category;
+            document.getElementById("skillLevel").innerText ="Level : " + skill.experienceLevel;
+            document.getElementById("skillPrice").innerHTML =`<i class="fa-solid fa-indian-rupee-sign"></i> ${skill.price}`;
             const container=document.getElementById("bookingButtonContainer");
             if(isSelfProfile){
-                container.innerHTML=`
-                <button class="book-btn" disabled>You cannot book your own session</button>`
+                container.innerHTML=`<button class="book-btn" style="cursor:not-allowed">You cannot book your own session</button>`
             }
         }
         catch(error){

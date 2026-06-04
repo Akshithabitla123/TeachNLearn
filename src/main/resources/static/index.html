@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Edumate</title>
+    <title>TeachNLearn</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,10 +14,10 @@
 <body>
 
 <nav class="navbar">
-    <div class="logo">TeachNLearn</div>
+    <div class="logo"><i class="fa-solid fa-graduation-cap"></i>TeachNLearn</div>
 
     <ul class="nav-links">
-        <li><a href="index.html">Home</a></li>
+        <li><a class="active" href="index.html">Home</a></li>
         <li><a href="#" onclick="openDashboard(event)">Dashboard</a></li>
     </ul>
     <div class="nav-actions" id="navActions">
@@ -27,8 +27,9 @@
 
 <section class="hero">
     <div class="hero-content">
-        <h1>Learn Skills From Real Experts</h1>
-        <p>Connect with talented mentors and master real-world skills.</p>
+        <h1 class="hero-title">Learn Skills.<span>Share Knowlege.</span>Grow Together.</h1>
+        <p class="hero-subtitle">Empowering Learners and Mentors to connect, collaborate,
+            and thrive through meaningful knowledge sharing.</p>
 
         <div class="hero-search">
             <input type="text" id="searchInput" placeholder="Search Java, React, Spring Boot..." />
@@ -37,33 +38,19 @@
     </div>
 </section>
 <section class="skills-section" id="searchSection" style="display:none;">
-
     <h2>Search Results</h2>
-
-    <div
-            class="skills-grid"
-            id="searchResults"
-
-    >
-
-    </div>
-
+    <div class="skills-grid" id="searchResults"></div>
 </section>
 
 
 <section class="skills-section">
     <h2>Trending Skills</h2>
-
-    <div class="skills-grid" id="skillsContainer">
-        
-    </div>
+    <div class="skills-grid" id="skillsContainer"></div>
 </section>
 
 <section class="mentors-section">
     <h2>Top Mentors</h2>
-    <div class="mentors-grid" id="topMentorsContainer">
-       
-    </div>
+    <div class="mentors-grid" id="topMentorsContainer"></div>
 </section>
 
 <footer>
@@ -84,7 +71,7 @@
                      <div class="mentor-card">
                     <div class="mentor-top"></div>
                     <div class="mentor-content">
-                        <img src="${mentor.profileImage || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}" alt="mentor" />
+                        <img src="${mentor.profileImage || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}" />
                         <h3>${mentor.name}</h3>
                         <p class="mentor-skill">
                             ${mentor.bio}

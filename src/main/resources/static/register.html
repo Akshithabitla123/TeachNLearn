@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Edumate</title>
+    <title>Register - TeachNLearn</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,7 +48,7 @@
             font-size: 48px;
             margin-bottom: 20px;
         ">
-            Join Edumate
+            Join Us
         </h1>
 
         <p style="
@@ -56,7 +56,7 @@
             line-height: 1.7;
             opacity: 0.9;
         ">
-            Create your account and start learning or teaching amazing skills.
+            Sign up and enter a beautifully crafted platform for learning, teaching and growth.
         </p>
 
     </div>
@@ -219,14 +219,11 @@
 
     async function registerUser() {
 
-        const name =
-            document.getElementById("name").value;
+        const name = document.getElementById("name").value;
 
-        const email =
-            document.getElementById("email").value;
+        const email = document.getElementById("email").value;
 
-        const password =
-            document.getElementById("password").value;
+        const password = document.getElementById("password").value;
 
         if(name === "" || email === "" || password === "") {
 
@@ -235,6 +232,9 @@
             return;
         }
 
+        if(!email.includes("@")){
+        alert("Enter valid email address");
+    }
         try {
 
             const response = await fetch(
