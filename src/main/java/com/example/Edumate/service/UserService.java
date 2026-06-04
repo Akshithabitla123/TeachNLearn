@@ -1,6 +1,7 @@
 package com.example.Edumate.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,11 +36,6 @@ public class UserService {
 
         userRepo.save(user);
         return "Success";
-    }
-
-    //get all users
-    public List<User> getAllUsers(){
-        return userRepo.findAll();
     }
     private UserDTO mapToDTO(User user){
         UserDTO dto = new UserDTO();
@@ -92,4 +88,19 @@ public class UserService {
     public List<User> getTopMentors(){
         return userRepo.findTop3ByOrderByRatingDesc();
     }
+    //get all users
+    public List<UserDTO> getAllUsers(){
+        List<User> users=userRepo.findAll();
+        return users.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+    //verify user
+    public String verifyUser(Long userId){
+        User user=userRepo.findById(userId).orElseThrow(()->new RuntimeException("User not found"));
+        user.setVerified(true);
+        userRepo.save(user);
+        return "User verified";
+    }
+
 }

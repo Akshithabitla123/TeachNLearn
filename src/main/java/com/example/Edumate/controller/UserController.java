@@ -42,7 +42,7 @@ public class UserController {
 
     //get all users
     @GetMapping
-    public List<User> getAllUsers(){
+    public List<UserDTO> getAllUsers(){
         return userService.getAllUsers();
     }
     //get user by id
