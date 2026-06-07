@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,6 +51,11 @@ public class UserController {
     public UserDTO getUserById(@PathVariable Long id){
         return userService.getUserById(id);
     }
+    //get my profile
+    @GetMapping("/me")
+    public UserDTO getMyProfile(Authentication authentication){
+        return userService.getUserByEmail(authentication.getName());
+    }
     //delete user
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id){
@@ -83,14 +89,14 @@ public class UserController {
         return "http://localhost:9090/images/" + fileName;
     }
     //update profile
-    @PutMapping("/profile/{id}")
-    public User updateProfile(@PathVariable Long id,@Valid @RequestBody UpdateProfileDTO request){
-        return userService.updateProfile(id,request);
+    @PutMapping("/profile")
+    public User updateProfile(Authentication authentication,@Valid @RequestBody UpdateProfileDTO request){
+        return userService.updateProfile(authentication.getName(),request);
     }
     //get summary
-    @GetMapping("/summary/{id}")
-    public SummaryDTO getSummary(@PathVariable Long id){
-        return userService.getSummary(id);
+    @GetMapping("/my-summary")
+    public SummaryDTO getSummary(Authentication authentication){
+        return userService.getSummary(authentication.getName());
     }
     //display top 3 highest rated mentors
     @GetMapping("/top-mentors")

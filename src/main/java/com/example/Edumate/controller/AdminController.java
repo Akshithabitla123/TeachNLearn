@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Edumate.dto.UserDTO;
 import com.example.Edumate.service.UserService;
-
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/admin")

@@ -1,6 +1,7 @@
 package com.example.Edumate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -9,13 +10,15 @@ import com.example.Edumate.dto.LoginRequestDTO;
 import com.example.Edumate.dto.RegisterRequestDTO;
 import com.example.Edumate.model.User;
 import com.example.Edumate.repository.UserRepo;
-
+import com.example.Edumate.security.JwtService;
 @Service
 public class AuthService {
     @Autowired
     private UserRepo userRepo;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private JwtService jwtService;
     //register
     public AuthResponseDTO register(RegisterRequestDTO request){
         if(userRepo.findByEmail(request.getEmail()).isPresent()){
@@ -33,7 +36,8 @@ public class AuthService {
                 savedUser.getId(),
                 savedUser.getName(),
                 savedUser.getEmail(),
-                savedUser.getRole()
+                savedUser.getRole(),
+                null //no token while registering
         );
     }
 
@@ -43,6 +47,18 @@ public class AuthService {
         if(!passwordEncoder.matches(request.getPassword(),user.getPassword())){
             throw new RuntimeException("Invalid Password");
         }
-        return new AuthResponseDTO("Login Successful", user.getId(), user.getName(),user.getEmail(),user.getRole());
+        String token=jwtService.generateToken(user.getEmail());
+        return new AuthResponseDTO(
+            "Login Successful",
+            user.getId(),
+            user.getName(),
+            user.getEmail(),
+            user.getRole(),
+            token);
+    }
+    //get current logged in user
+    public User getCurrentUser(Authentication authentication){
+        String email=authentication.getName();
+        return userRepo.findByEmail(email).orElseThrow(()->new RuntimeException("User not found"));
     }
 }

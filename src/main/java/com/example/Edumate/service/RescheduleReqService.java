@@ -56,8 +56,11 @@ public class RescheduleReqService {
         return mapToDto(rescheduleReqRepo.save(request));
     }
     
-    public RescheduleDTO proposeSlots(Long bookingId,LocalDateTime slot1,LocalDateTime slot2,LocalDateTime slot3){
+    public RescheduleDTO proposeSlots(Long bookingId,String email,LocalDateTime slot1,LocalDateTime slot2,LocalDateTime slot3){
         Booking booking=bookingRepo.findById(bookingId).orElseThrow(()->new RuntimeException("Booking not found"));
+        if(!booking.getMentor().getEmail().equals(email)){
+            throw new RuntimeException("only mentor can propose slots");
+        }
         booking.setStatus(Status.RESCHEDULE_REQUESTED);
         RescheduleRequest request=rescheduleReqRepo.findByBookingId(bookingId).orElseThrow(()->new RuntimeException("Request not found"));
         request.setSlot1(slot1);
@@ -67,15 +70,19 @@ public class RescheduleReqService {
         return mapToDto(rescheduleReqRepo.save(request));
     }
     //student accept a slot
-    public String acceptSlot(Long bookingId,LocalDateTime chosenSlot){
+    public String acceptSlot(Long bookingId,String email,LocalDateTime chosenSlot){
         RescheduleRequest req=rescheduleReqRepo.findByBookingId(bookingId).orElseThrow(()->new RuntimeException("Request not found"));
-         if (!chosenSlot.equals(req.getSlot1()) &&
+        Booking booking=req.getBooking();
+        if(!booking.getStudent().getEmail().equals(email)){
+            throw new RuntimeException("Student associated with this session can only accept");
+        }
+        if (!chosenSlot.equals(req.getSlot1()) &&
         !chosenSlot.equals(req.getSlot2()) &&
         !chosenSlot.equals(req.getSlot3())) {
             throw new RuntimeException("Invalid slot");
         }
         req.setAcceptedSlot(chosenSlot);
-        Booking booking=req.getBooking();
+        
         booking.setStatus(Status.RESCHEDULED);
         booking.setSessionDate(chosenSlot);
         bookingRepo.save(booking);
@@ -84,10 +91,13 @@ public class RescheduleReqService {
     }
 
     //reject request
-    public RescheduleDTO rejectRequest(Long requestId) {
+    public RescheduleDTO rejectRequest(Long requestId,String email) {
         RescheduleRequest req = rescheduleReqRepo.findById(requestId)
                 .orElseThrow();
         Booking booking=req.getBooking();
+        if(!booking.getMentor().getEmail().equals(email) && !booking.getStudent().getEmail().equals(email)){
+            throw new RuntimeException("Unauthorized");
+        }
         booking.setStatus(Status.REJECTED);
         bookingRepo.save(booking);
         RescheduleDTO dto=mapToDto(req);
@@ -95,8 +105,12 @@ public class RescheduleReqService {
         return dto;
     }
 
-    public RescheduleDTO getSlots(Long bookingId) {
+    public RescheduleDTO getSlots(Long bookingId,String email) {
         RescheduleRequest req=rescheduleReqRepo.findByBookingId(bookingId).orElseThrow(()->new RuntimeException("No request found"));
+        Booking booking=req.getBooking();
+        if(!booking.getMentor().getEmail().equals(email) && !booking.getStudent().getEmail().equals(email)){
+            throw new RuntimeException("Unauthorized");
+        }
         return mapToDto(req);
     }
 }

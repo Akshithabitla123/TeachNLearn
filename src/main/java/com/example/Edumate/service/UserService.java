@@ -55,6 +55,11 @@ public class UserService {
         User user =userRepo.findById(id).orElseThrow(()->new RuntimeException("User not found"));
         return mapToDTO(user);
     }
+    //get user by email
+    public UserDTO getUserByEmail(String email){
+        User user =userRepo.findByEmail(email).orElseThrow(()->new RuntimeException("User not found"));
+        return mapToDTO(user);
+    }
 
     //delete user
     public void deleteUser(Long id){
@@ -63,8 +68,8 @@ public class UserService {
     }
 
     //update profile
-    public User updateProfile(Long userId, UpdateProfileDTO request){
-        User user=userRepo.findById(userId)
+    public User updateProfile(String email, UpdateProfileDTO request){
+        User user=userRepo.findByEmail(email)
                 .orElseThrow(()->new RuntimeException("User not found"));
         user.setBio(request.getBio());
         user.setLinkedIn(request.getLinkedIn());
@@ -73,11 +78,12 @@ public class UserService {
         return userRepo.save(user);
     }
     //get summary
-    public SummaryDTO getSummary(Long id) {
-        User user=userRepo.findById(id)
+    public SummaryDTO getSummary(String email) {
+        User user=userRepo.findByEmail(email)
                 .orElseThrow(()->new RuntimeException("User not found"));
+        Long userId=user.getId();
         SummaryDTO dto=new SummaryDTO();
-        int totalSkills=skillRepo.countByUserId(id);
+        int totalSkills=skillRepo.countByUserId(userId);
         dto.setTotalSkills(totalSkills);
         int totalLearners=bookingRepo.countCompletedLearners(user.getId(),Status.COMPLETED);
         dto.setTotalStudents(totalLearners);//set to some random

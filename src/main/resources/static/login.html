@@ -182,14 +182,18 @@
 
     async function loginUser() {
 
-        const email = document.getElementById("email").value;
+        const email = document.getElementById("email").value.trim();
 
-        const password = document.getElementById("password").value;
+        const password = document.getElementById("password").value.trim();
 
         if(email === "" || password === "") {
 
             alert("Please fill all fields");
 
+            return;
+        }
+        if(!email.includes("@")){
+            alert("Enter valid email address");
             return;
         }
 
@@ -217,9 +221,13 @@ const data = await response.json();
 if(response.ok) {
 
     // FETCH COMPLETE USER DETAILS
-
+    localStorage.setItem("token",data.token);
     const userResponse = await fetch(
-        `http://localhost:9090/users/${data.userId}`
+        "http://localhost:9090/users/me",{
+            headers:{
+                Authorization:`Bearer ${data.token}`
+            }
+        }
     );
 
     const fullUser =
@@ -231,11 +239,10 @@ if(response.ok) {
         "user",
         JSON.stringify(fullUser)
     );
-
+    localStorage.setItem("role",data.role);
     alert("Login Successful");
 
-    window.location.href =
-        "index.html"
+    window.location.href ="index.html"
 
 }
              else {

@@ -101,11 +101,12 @@ public class BookingService {
         .collect(Collectors.toList());
     }
     //get bookings by a student
-    public List<BookingResponseDTO> getStudentBookings(Long studentId){
-        return bookingRepo.findByStudentId(studentId)
-        .stream()
-        .map(this::mapToDTO)
-        .collect(Collectors.toList());
+    public List<BookingResponseDTO> getStudentBookingsByEmail(String email){
+        User user=userRepo.findByEmail(email).orElseThrow(()->new RuntimeException("User not found"));
+        return bookingRepo.findByStudentId(user.getId())
+            .stream()
+            .map(this::mapToDTO)
+            .toList();
     }
     //update the status of the session
     //accepted and rejected-> mentor
@@ -119,8 +120,7 @@ public class BookingService {
             if(!mentorId.equals(userId)){
                 throw new RuntimeException("Only mentor can accept/reject");
             }
-            booking.setStatus(status);
-        }
+            booking.setStatus(status);        }
         else if(status==Status.REJECTED){
             if(!mentorId.equals(userId)){
                 throw new RuntimeException("Only mentor can accept/reject");
@@ -169,9 +169,12 @@ public class BookingService {
         return mapToDTO(booking);
     }
     //cancel booking
-    public BookingResponseDTO cancelBooking(Long bookingId){
+    public BookingResponseDTO cancelBooking(Long bookingId,String email){
         Booking booking=bookingRepo.findById(bookingId)
                 .orElseThrow(()->new RuntimeException("Booking not found"));
+        if(!booking.getStudent().getEmail().equals(email)){
+            throw new RuntimeException("Unauthorized");
+        }
         booking.setStatus(Status.CANCELLED);
         return mapToDTO(bookingRepo.save(booking));
     }

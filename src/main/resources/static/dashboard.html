@@ -287,13 +287,11 @@
 document.getElementById("slot1").min =new Date().toISOString().slice(0, 16);
 document.getElementById("slot2").min =new Date().toISOString().slice(0, 16);
 document.getElementById("slot3").min =new Date().toISOString().slice(0, 16);
-    const user =
-        JSON.parse(localStorage.getItem("user"));
-
-    if(!user) {
-
+    const token =localStorage.getItem("token");
+    if(!token) {
         window.location.href = "login.html";
     }
+    const user=JSON.parse(localStorage.getItem("user"));
 
     // Welcome Text
     document.getElementById("welcomeText")
@@ -369,7 +367,7 @@ document.getElementById("userVerified").innerHTML =
 
     function logoutUser() {
 
-        localStorage.removeItem("user");
+        localStorage.clear();
 
         window.location.href = "index.html";
     }
@@ -414,11 +412,12 @@ document.getElementById("userVerified").innerHTML =
             imageUrl = await uploadRes.text();
         }
         const response = await fetch(
-            `http://localhost:9090/users/profile/${user.id}`,
+            `http://localhost:9090/users/profile`,
             {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization":`Bearer ${token}`
                 },
                 body: JSON.stringify({
                     bio,
@@ -468,11 +467,12 @@ document.getElementById("userVerified").innerHTML =
         }
         try {
             const response = await fetch(
-                `http://localhost:9090/skills/${user.id}`,
+                `http://localhost:9090/skills`,
                 {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                        "Authorization":`Bearer ${token}`
                     },
                     body: JSON.stringify({
                         title,
@@ -513,7 +513,12 @@ document.getElementById("userVerified").innerHTML =
         try {
 
             const response = await fetch(
-                `http://localhost:9090/skills/user/${user.id}`
+                `http://localhost:9090/skills/my-skills`,
+                {
+                    headers:{
+                        Authorization:`Bearer ${token}`
+                    }
+                }
             );
 
             const skills = await response.json();
@@ -549,7 +554,11 @@ document.getElementById("userVerified").innerHTML =
     //load summary of the user
     async function loadSummary(){
         try{
-            const response=await fetch(`http://localhost:9090/users/summary/${user.id}`);
+            const response=await fetch("http://localhost:9090/users/my-summary",{
+                headers:{
+                    Authorization:`Bearer ${token}`
+                }
+            });
             const summary=await response.json();
             document.getElementById("totalSkills").innerText=summary.totalSkills;
             document.getElementById("totalStudents").innerText=summary.totalStudents;
@@ -563,7 +572,13 @@ document.getElementById("userVerified").innerHTML =
     //load bookings
     async function loadBookings(){
     try{
-        const response=await fetch(`http://localhost:9090/bookings/student/${user.id}`);
+        const response=await fetch("http://localhost:9090/bookings/my-bookings",
+            {
+                headers:{
+                    Authorization:`Bearer ${localStorage.getItem("token")}`
+                }
+            }
+        );
         const bookings=await response.json();
         const container=document.getElementById("bookingsContainer");
         container.innerHTML="";
@@ -630,7 +645,13 @@ document.getElementById("userVerified").innerHTML =
 //load sessions (mentoring)
 async function loadSessions(){
     try{
-        const response=await fetch(`http://localhost:9090/bookings/mentor/${user.id}`);
+        const response=await fetch(`http://localhost:9090/bookings/mentor-bookings`,
+            {
+                headers:{
+                    Authorization:`Bearer ${token}`
+                }
+            }
+        );
         const sessions=await response.json();
         const container=document.getElementById("sessionsContainer");
         container.innerHTML="";
@@ -687,9 +708,12 @@ async function loadSessions(){
 
     async function updateBookingStatus(bookingId,status){
     try {
-        const response=await fetch(`http://localhost:9090/bookings/${bookingId}/status?userId=${user.id}&status=${status}`,
+        const response=await fetch(`http://localhost:9090/bookings/${bookingId}/status?status=${status}`,
             {
-                method:"PUT"
+                method:"PUT",
+                headers:{
+                    Authorization:`Bearer ${token}`
+                }
             }
         );
         if(!response.ok){
@@ -705,7 +729,10 @@ let selectedBookingId=null;
 async function openReschedule(bookingId){
     await fetch(`http://localhost:9090/reschedule/create/${bookingId}`,
         {
-            method:"POST"
+            method:"POST",
+            headers:{
+                Authorization:`Bearer ${token}`
+            }
         });
         selectedBookingId=bookingId;
     document.getElementById("rescheduleOverlay").style.display="flex";
@@ -721,7 +748,10 @@ async function sendReschedule(){
     try {
         const response=await fetch(`http://localhost:9090/reschedule/propose/${selectedBookingId}?slot1=${encodeURIComponent(s1)}&slot2=${encodeURIComponent(s2)}&slot3=${encodeURIComponent(s3)}`,
         {
-           method:"PUT"
+           method:"PUT",
+           headers:{
+                Authorization:`Bearer ${token}`
+           }
         }
         );
         if(!response.ok){
@@ -755,7 +785,11 @@ loadSummary();
 }
 async function loadRescheduleSlots(bookingId){
     try{
-        const response=await fetch(`http://localhost:9090/reschedule/slots/${bookingId}`);
+        const response=await fetch(`http://localhost:9090/reschedule/slots/${bookingId}`,{
+            headers:{
+                Authorization:`Bearer ${token}`
+            }
+        });
         const request=await response.json();
         const container=document.getElementById("popupSlotsContainer");
         container.innerHTML=`
@@ -773,7 +807,10 @@ async function acceptSlot(bookingId,slot){
     try{
         const response= await fetch(`http://localhost:9090/reschedule/accept/${bookingId}?slot=${encodeURIComponent(slot)}`,
             {
-                method:"PUT"
+                method:"PUT",
+                headers:{
+                    Authorization:`Bearer ${token}`
+                }
             }
         );
         if(!response.ok){
@@ -793,9 +830,12 @@ function closeSlotPopup(){
 
 async function markCompleted(sessionId){
     try{
-        const response=await fetch(`http://localhost:9090/bookings/${sessionId}/complete?userId=${user.id}`,
+        const response=await fetch(`http://localhost:9090/bookings/${sessionId}/complete`,
             {
-                method:"PUT"
+                method:"PUT",
+                headers:{
+                    Authorization:`Bearer ${token}`
+                }
             }
         );
         if(!response.ok){
@@ -838,10 +878,11 @@ async function submitRating(){
         return;
     }
     try {
-        const response=await fetch(`http://localhost:9090/rating/${user.id}`,{
+        const response=await fetch(`http://localhost:9090/rating`,{
             method:"POST",
             headers:{
-                "Content-type":"application/json"
+                "Content-type":"application/json",
+                Authorization:`Bearer ${token}`
             },
             body:JSON.stringify({
                 bookingId:currentBookingId,
@@ -905,7 +946,10 @@ async function confirmCancel(){
     try{
         const response=await fetch(`http://localhost:9090/bookings/${cancelBookingId}/cancel`,
             {
-                method:"PUT"
+                method:"PUT",
+                headers:{
+                    Authorization:`Bearer ${token}`
+                }
             });
         if(!response.ok){
             throw new Error();
