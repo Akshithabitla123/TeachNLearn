@@ -4,11 +4,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import com.example.Edumate.model.Skill;
 
-@Repository
+
 public interface SkillRepo extends JpaRepository<Skill,Long> {
     //search skills by title
     List<Skill> findByTitleContainingIgnoreCase(String keyword);

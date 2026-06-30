@@ -2,7 +2,6 @@ package com.example.Edumate.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,16 +21,16 @@ import com.example.Edumate.repository.UserRepo;
 import com.example.Edumate.service.BookingService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/bookings")
+@RequiredArgsConstructor
 public class BookingController {
-    @Autowired
-    private BookingService bookingService;
-    @Autowired
-    private UserRepo userRepo;
+    private final BookingService bookingService;
+    private final UserRepo userRepo;
     @PostMapping
     public BookingResponseDTO createBooking(@Valid @RequestBody BookingDTO dto){
         return bookingService.createBooking(dto);

@@ -109,9 +109,6 @@
     //block previous dates from today
     document.getElementById("sessionDate").min =new Date().toISOString().slice(0, 16);
     const token=localStorage.getItem("token");
-    const authHeaders={
-        "Authorization":`Bearer ${token}`
-    };
     const user=JSON.parse(localStorage.getItem("user"));
     if(!user){
         alert("Login required");
@@ -133,11 +130,7 @@
 
     try{
 
-        const response=await fetch(`http://localhost:9090/users/${userId}`,
-            {
-                headers:authHeaders
-            }
-        );
+        const response=await authFetch(`http://localhost:9090/users/${userId}`);
         const mentor= await response.json();
         document.getElementById("mentorImage").src=mentor.profileImage ||"https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
 
@@ -156,11 +149,7 @@
 
         try{
 
-            const response = await fetch(`http://localhost:9090/skills/user/${userId}/skill/${skillId}`,
-                {
-                    headers:authHeaders
-                }
-            );
+            const response = await authFetch(`http://localhost:9090/skills/user/${userId}/skill/${skillId}`);
             if(!response.ok){
                 console.log("Status: ",response.status);
                 const text=await response.text();
@@ -202,12 +191,8 @@
 
     async function loadSkills(){
     try{
-        const response = await fetch(
-            `http://localhost:9090/skills/user/${userId}`,
-            {
-                headers:authHeaders
-            }
-        );
+        const response = await authFetch(
+            `http://localhost:9090/skills/user/${userId}`);
         const skills = await response.json();
         const skillSection = document.querySelector(".skill-section");
         skillSection.innerHTML = `
@@ -245,11 +230,7 @@ window.location.href=`skill-profile.html?userId=${userId}&skillId=${skillId}`;
 // reviews and comments
 async function loadReviews(){
     try{
-        const response=await fetch(`http://localhost:9090/rating/mentor/${userId}`,
-            {
-                headers:authHeaders
-            }
-        );
+        const response=await authFetch(`http://localhost:9090/rating/mentor/${userId}`);
         const reviews=await response.json();
         const container=document.getElementById("reviewsContainer");
         container.innerHTML="";
@@ -317,13 +298,12 @@ async function bookSession(){
             sessionDate:sessionDate,
             message:message
         };
-        const response=await fetch(
+        const response=await authFetch(
             "http://localhost:9090/bookings",
             {
                 method:"POST",
                 headers:{
-                    "Content-Type":"application/json",
-                    "Authorization":"Bearer "+localStorage.getItem("token")
+                    "Content-Type":"application/json"
                 },
                 body:JSON.stringify(bookingData)
             }
@@ -379,11 +359,7 @@ async function bookSession(){
 }
 async function viewBooking(bookingId){
     try {
-        const response=await fetch(`http://localhost:9090/bookings/${bookingId}`,{
-            headers:{
-                "Authorization":"Bearer "+localStorage.getItem("token")
-            }
-        });
+        const response=await authFetch(`http://localhost:9090/bookings/${bookingId}`);
         const booking=await response.json();
          document.getElementById(
         "bookingDetails"
@@ -445,11 +421,7 @@ async function checkBookingStatus(){
         return;
     }
     try{
-        const response=await fetch(`http://localhost:9090/bookings/check?skillId=${skillId}`,{
-            headers:{
-                "Authorization":"Bearer "+localStorage.getItem("token")
-            }
-        });
+        const response=await authFetch(`http://localhost:9090/bookings/check?skillId=${skillId}`);
         if(!response.ok){
             return;
         }
@@ -481,6 +453,31 @@ async function initialize(){
         section.style.display="block";
     }
     
+}
+
+//detects expired or invalid tokens and redirects to login
+let sessionExpired=false;
+async function authFetch(url,options={}){
+    const currToken=localStorage.getItem("token");
+    const headers={
+        ...(options.headers || {}),
+        Authorization:`Bearer ${currToken}`
+    };
+    const response=await fetch(url,{...options
+        ,headers
+    });
+
+    if(response.status===401 || response.status===403){
+        if(!sessionExpired){
+            sessionExpired=true;
+            localStorage.clear();
+            alert("Session expired, please login again");
+            window.location.href="login.html";
+        }
+        
+        throw new Error("Session Expired");
+    }
+    return response;
 }
 initialize()
 

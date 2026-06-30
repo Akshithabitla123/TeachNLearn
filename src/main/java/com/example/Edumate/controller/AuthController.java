@@ -1,6 +1,5 @@
 package com.example.Edumate.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,13 +14,14 @@ import com.example.Edumate.dto.RegisterRequestDTO;
 import com.example.Edumate.service.AuthService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
     //register
     @PostMapping("/register")
     public AuthResponseDTO register(@Valid @RequestBody RegisterRequestDTO request){

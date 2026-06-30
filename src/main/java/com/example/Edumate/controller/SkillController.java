@@ -2,7 +2,6 @@ package com.example.Edumate.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,15 +19,15 @@ import com.example.Edumate.repository.UserRepo;
 import com.example.Edumate.service.SkillService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/skills")
+@RequiredArgsConstructor
 public class SkillController {
-    @Autowired
-    private SkillService skillService;
-    @Autowired
-    private UserRepo userRepo;
+    private final SkillService skillService;
+    private final UserRepo userRepo;
 
     @PostMapping()
     public String createSkill(Authentication authentication,@Valid @RequestBody Skill skill){

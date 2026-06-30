@@ -3,7 +3,6 @@ package com.example.Edumate.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.Edumate.Enum.Status;
@@ -15,14 +14,14 @@ import com.example.Edumate.repository.BookingRepo;
 import com.example.Edumate.repository.SkillRepo;
 import com.example.Edumate.repository.UserRepo;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class UserService {
-    @Autowired
-    private UserRepo userRepo;
-    @Autowired
-    private SkillRepo skillRepo;
-    @Autowired
-    private BookingRepo bookingRepo;
+    private final UserRepo userRepo;
+    private final SkillRepo skillRepo;
+    private final BookingRepo bookingRepo;
 
     //save user
     public String saveUser(User user){
@@ -60,13 +59,6 @@ public class UserService {
         User user =userRepo.findByEmail(email).orElseThrow(()->new RuntimeException("User not found"));
         return mapToDTO(user);
     }
-
-    //delete user
-    public void deleteUser(Long id){
-        User user=userRepo.findById(id).orElseThrow(()->new RuntimeException("User Already deleted"));
-        userRepo.delete(user);
-    }
-
     //update profile
     public User updateProfile(String email, UpdateProfileDTO request){
         User user=userRepo.findByEmail(email)
@@ -86,7 +78,7 @@ public class UserService {
         int totalSkills=skillRepo.countByUserId(userId);
         dto.setTotalSkills(totalSkills);
         int totalLearners=bookingRepo.countCompletedLearners(user.getId(),Status.COMPLETED);
-        dto.setTotalStudents(totalLearners);//set to some random
+        dto.setTotalStudents(totalLearners);
         dto.setRating(user.getRating()==null?0: user.getRating());
         return dto;
     }

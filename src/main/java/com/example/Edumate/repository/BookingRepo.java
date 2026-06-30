@@ -4,17 +4,15 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
 
 import com.example.Edumate.Enum.Status;
 import com.example.Edumate.model.Booking;
 
-
-@Repository
 public interface BookingRepo extends JpaRepository<Booking,Long> {
     List<Booking> findByMentorId(Long mentorId);
     List<Booking> findByStudentId(Long studentId);
     Optional<Booking> findFirstByStudentIdAndSkillIdOrderBySessionDate(Long studentId, Long skillId);
+    Optional<Booking> findFirstByStudentIdAndSkillIdAndStatusInOrderBySessionDate(Long studentId,Long skillId, List<Status> statuses);
     @Query("""
             SELECT COUNT(DISTINCT b.student.id)
             FROM Booking b

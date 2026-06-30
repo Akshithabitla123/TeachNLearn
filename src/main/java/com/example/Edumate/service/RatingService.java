@@ -2,7 +2,6 @@ package com.example.Edumate.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.Edumate.Enum.Status;
@@ -15,17 +14,20 @@ import com.example.Edumate.repository.BookingRepo;
 import com.example.Edumate.repository.RatingRepo;
 import com.example.Edumate.repository.UserRepo;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class RatingService {
-    @Autowired
-    private RatingRepo ratingRepo;
-    @Autowired
-    private BookingRepo bookingRepo;
-    @Autowired
-    private UserRepo userRepo;
+    private final RatingRepo ratingRepo;
+    private final BookingRepo bookingRepo;
+    private final UserRepo userRepo;
     public String addRating(Long studentId,RatingDTO dto){
         Booking booking=bookingRepo.findById(dto.getBookingId()).
                 orElseThrow(()->new RuntimeException("Booking Not found"));
+        if(!booking.getStudent().getId().equals(studentId)){
+            throw new RuntimeException("Only the student with this booking can rate it");
+        }
         if(booking.getStatus()!=Status.COMPLETED){
             throw new RuntimeException("Session not completed");
         }

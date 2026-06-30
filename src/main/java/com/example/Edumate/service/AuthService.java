@@ -1,6 +1,4 @@
 package com.example.Edumate.service;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -8,17 +6,18 @@ import org.springframework.stereotype.Service;
 import com.example.Edumate.dto.AuthResponseDTO;
 import com.example.Edumate.dto.LoginRequestDTO;
 import com.example.Edumate.dto.RegisterRequestDTO;
+import com.example.Edumate.exception.InvalidCredentialsException;
 import com.example.Edumate.model.User;
 import com.example.Edumate.repository.UserRepo;
 import com.example.Edumate.security.JwtService;
+
+import lombok.RequiredArgsConstructor;
 @Service
+@RequiredArgsConstructor
 public class AuthService {
-    @Autowired
-    private UserRepo userRepo;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private JwtService jwtService;
+    private final UserRepo userRepo;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
     //register
     public AuthResponseDTO register(RegisterRequestDTO request){
         if(userRepo.findByEmail(request.getEmail()).isPresent()){
@@ -43,9 +42,9 @@ public class AuthService {
 
     //login
     public AuthResponseDTO login(LoginRequestDTO request){
-        User user=userRepo.findByEmail(request.getEmail()).orElseThrow(()->new RuntimeException("User not found"));
+        User user=userRepo.findByEmail(request.getEmail()).orElseThrow(()->new InvalidCredentialsException("Invalid email or password"));
         if(!passwordEncoder.matches(request.getPassword(),user.getPassword())){
-            throw new RuntimeException("Invalid Password");
+            throw new InvalidCredentialsException("Invalid email or password");
         }
         String token=jwtService.generateToken(user.getEmail());
         return new AuthResponseDTO(

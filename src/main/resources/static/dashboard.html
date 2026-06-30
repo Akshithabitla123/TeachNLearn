@@ -291,6 +291,7 @@ document.getElementById("slot3").min =new Date().toISOString().slice(0, 16);
     if(!token) {
         window.location.href = "login.html";
     }
+    else{
     const user=JSON.parse(localStorage.getItem("user"));
 
     // Welcome Text
@@ -336,7 +337,7 @@ document.getElementById("userVerified").innerHTML =
         ? `<i class="fa-solid fa-circle-check"></i> Verified Mentor`
         : `<i class="fa-solid fa-circle-xmark"></i> Not Verified`;
 
-
+    }
     // SECTION SWITCHING
     function showSection(sectionId) {
 
@@ -411,13 +412,12 @@ document.getElementById("userVerified").innerHTML =
             });
             imageUrl = await uploadRes.text();
         }
-        const response = await fetch(
+        const response = await authFetch(
             `http://localhost:9090/users/profile`,
             {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json",
-                    "Authorization":`Bearer ${token}`
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
                     bio,
@@ -428,10 +428,9 @@ document.getElementById("userVerified").innerHTML =
             }
         );
 
-        const data = await response.json();
-
+    
         if (response.ok) {
-
+            const data = await response.json();
             localStorage.setItem("user", JSON.stringify(data));
             window.location.reload();
             if (imageUrl) {
@@ -466,13 +465,12 @@ document.getElementById("userVerified").innerHTML =
             return;
         }
         try {
-            const response = await fetch(
+            const response = await authFetch(
                 `http://localhost:9090/skills`,
                 {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json",
-                        "Authorization":`Bearer ${token}`
+                        "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
                         title,
@@ -512,13 +510,8 @@ document.getElementById("userVerified").innerHTML =
 
         try {
 
-            const response = await fetch(
-                `http://localhost:9090/skills/my-skills`,
-                {
-                    headers:{
-                        Authorization:`Bearer ${token}`
-                    }
-                }
+            const response = await authFetch(
+                `http://localhost:9090/skills/my-skills`
             );
 
             const skills = await response.json();
@@ -554,11 +547,7 @@ document.getElementById("userVerified").innerHTML =
     //load summary of the user
     async function loadSummary(){
         try{
-            const response=await fetch("http://localhost:9090/users/my-summary",{
-                headers:{
-                    Authorization:`Bearer ${token}`
-                }
-            });
+            const response=await authFetch("http://localhost:9090/users/my-summary");
             const summary=await response.json();
             document.getElementById("totalSkills").innerText=summary.totalSkills;
             document.getElementById("totalStudents").innerText=summary.totalStudents;
@@ -572,13 +561,7 @@ document.getElementById("userVerified").innerHTML =
     //load bookings
     async function loadBookings(){
     try{
-        const response=await fetch("http://localhost:9090/bookings/my-bookings",
-            {
-                headers:{
-                    Authorization:`Bearer ${localStorage.getItem("token")}`
-                }
-            }
-        );
+        const response=await authFetch("http://localhost:9090/bookings/my-bookings");
         const bookings=await response.json();
         const container=document.getElementById("bookingsContainer");
         container.innerHTML="";
@@ -645,13 +628,7 @@ document.getElementById("userVerified").innerHTML =
 //load sessions (mentoring)
 async function loadSessions(){
     try{
-        const response=await fetch(`http://localhost:9090/bookings/mentor-bookings`,
-            {
-                headers:{
-                    Authorization:`Bearer ${token}`
-                }
-            }
-        );
+        const response=await authFetch(`http://localhost:9090/bookings/mentor-bookings`);
         const sessions=await response.json();
         const container=document.getElementById("sessionsContainer");
         container.innerHTML="";
@@ -708,12 +685,9 @@ async function loadSessions(){
 
     async function updateBookingStatus(bookingId,status){
     try {
-        const response=await fetch(`http://localhost:9090/bookings/${bookingId}/status?status=${status}`,
+        const response=await authFetch(`http://localhost:9090/bookings/${bookingId}/status?status=${status}`,
             {
-                method:"PUT",
-                headers:{
-                    Authorization:`Bearer ${token}`
-                }
+                method:"PUT"
             }
         );
         if(!response.ok){
@@ -727,12 +701,9 @@ async function loadSessions(){
 }
 let selectedBookingId=null;
 async function openReschedule(bookingId){
-    await fetch(`http://localhost:9090/reschedule/create/${bookingId}`,
+    await authFetch(`http://localhost:9090/reschedule/create/${bookingId}`,
         {
-            method:"POST",
-            headers:{
-                Authorization:`Bearer ${token}`
-            }
+            method:"POST"
         });
         selectedBookingId=bookingId;
     document.getElementById("rescheduleOverlay").style.display="flex";
@@ -746,12 +717,9 @@ async function sendReschedule(){
         return;
     }
     try {
-        const response=await fetch(`http://localhost:9090/reschedule/propose/${selectedBookingId}?slot1=${encodeURIComponent(s1)}&slot2=${encodeURIComponent(s2)}&slot3=${encodeURIComponent(s3)}`,
+        const response=await authFetch(`http://localhost:9090/reschedule/propose/${selectedBookingId}?slot1=${encodeURIComponent(s1)}&slot2=${encodeURIComponent(s2)}&slot3=${encodeURIComponent(s3)}`,
         {
-           method:"PUT",
-           headers:{
-                Authorization:`Bearer ${token}`
-           }
+           method:"PUT"
         }
         );
         if(!response.ok){
@@ -785,11 +753,7 @@ loadSummary();
 }
 async function loadRescheduleSlots(bookingId){
     try{
-        const response=await fetch(`http://localhost:9090/reschedule/slots/${bookingId}`,{
-            headers:{
-                Authorization:`Bearer ${token}`
-            }
-        });
+        const response=await authFetch(`http://localhost:9090/reschedule/slots/${bookingId}`);
         const request=await response.json();
         const container=document.getElementById("popupSlotsContainer");
         container.innerHTML=`
@@ -805,12 +769,9 @@ async function loadRescheduleSlots(bookingId){
 
 async function acceptSlot(bookingId,slot){
     try{
-        const response= await fetch(`http://localhost:9090/reschedule/accept/${bookingId}?slot=${encodeURIComponent(slot)}`,
+        const response= await authFetch(`http://localhost:9090/reschedule/accept/${bookingId}?slot=${encodeURIComponent(slot)}`,
             {
-                method:"PUT",
-                headers:{
-                    Authorization:`Bearer ${token}`
-                }
+                method:"PUT"
             }
         );
         if(!response.ok){
@@ -830,12 +791,9 @@ function closeSlotPopup(){
 
 async function markCompleted(sessionId){
     try{
-        const response=await fetch(`http://localhost:9090/bookings/${sessionId}/complete`,
+        const response=await authFetch(`http://localhost:9090/bookings/${sessionId}/complete`,
             {
-                method:"PUT",
-                headers:{
-                    Authorization:`Bearer ${token}`
-                }
+                method:"PUT"
             }
         );
         if(!response.ok){
@@ -878,11 +836,10 @@ async function submitRating(){
         return;
     }
     try {
-        const response=await fetch(`http://localhost:9090/rating`,{
+        const response=await authFetch(`http://localhost:9090/rating`,{
             method:"POST",
             headers:{
-                "Content-type":"application/json",
-                Authorization:`Bearer ${token}`
+                "Content-type":"application/json"
             },
             body:JSON.stringify({
                 bookingId:currentBookingId,
@@ -944,12 +901,9 @@ async function confirmCancel(){
         return;
     }
     try{
-        const response=await fetch(`http://localhost:9090/bookings/${cancelBookingId}/cancel`,
+        const response=await authFetch(`http://localhost:9090/bookings/${cancelBookingId}/cancel`,
             {
-                method:"PUT",
-                headers:{
-                    Authorization:`Bearer ${token}`
-                }
+                method:"PUT"
             });
         if(!response.ok){
             throw new Error();
@@ -963,6 +917,30 @@ async function confirmCancel(){
     }
 }
 
+//detects expired or invalid tokens and redirects to login
+let sessionExpired=false;
+async function authFetch(url,options={}){
+    const currToken=localStorage.getItem("token");
+    const headers={
+        ...(options.headers || {}),
+        Authorization:`Bearer ${currToken}`
+    };
+    const response=await fetch(url,{...options
+        ,headers
+    });
+
+    if(response.status===401 || response.status===403){
+        if(!sessionExpired){
+            sessionExpired=true;
+            localStorage.clear();
+            alert("Session expired, please login again");
+            window.location.href="login.html";
+        }
+
+        throw new Error("Session Expired");
+    }
+    return response;
+}
 
 </script>
 </body>

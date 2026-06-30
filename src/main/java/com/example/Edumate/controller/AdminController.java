@@ -2,7 +2,6 @@ package com.example.Edumate.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,12 +11,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Edumate.dto.UserDTO;
 import com.example.Edumate.service.UserService;
+
+import lombok.RequiredArgsConstructor;
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/admin")
+@RequiredArgsConstructor
 public class AdminController {
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
     //get all users
     @GetMapping("/users")
     public List<UserDTO> getAllUsers(){

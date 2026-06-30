@@ -2,7 +2,6 @@ package com.example.Edumate.controller;
 
 import java.time.LocalDateTime;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,11 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.Edumate.dto.RescheduleDTO;
 import com.example.Edumate.service.RescheduleReqService;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/reschedule")
+@RequiredArgsConstructor
 public class RescheduleReqController {
-    @Autowired
-    private RescheduleReqService service;
+    private final RescheduleReqService service;
     @PostMapping("/create/{bookingId}")
     public RescheduleDTO create(@PathVariable Long bookingId){
         return service.createRequest(bookingId);

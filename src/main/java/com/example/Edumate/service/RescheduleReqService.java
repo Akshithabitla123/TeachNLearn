@@ -3,7 +3,6 @@ package com.example.Edumate.service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.Edumate.Enum.Status;
@@ -14,12 +13,13 @@ import com.example.Edumate.model.RescheduleRequest;
 import com.example.Edumate.repository.BookingRepo;
 import com.example.Edumate.repository.RescheduleReqRepo;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class RescheduleReqService {
-    @Autowired
-    private BookingRepo bookingRepo;
-    @Autowired
-    private RescheduleReqRepo rescheduleReqRepo;
+    private final BookingRepo bookingRepo;
+    private final RescheduleReqRepo rescheduleReqRepo;
     //mapper
     private BookingResponseDTO mapBooking(Booking booking){
 

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.Edumate.Enum.Status;
@@ -19,16 +18,15 @@ import com.example.Edumate.repository.BookingRepo;
 import com.example.Edumate.repository.SkillRepo;
 import com.example.Edumate.repository.UserRepo;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class BookingService {
-    @Autowired
-    private BookingRepo bookingRepo;
-    @Autowired
-    private UserRepo userRepo;
-    @Autowired
-    private SkillRepo skillRepo;
-    @Autowired
-    private RescheduleReqService service;
+    private final BookingRepo bookingRepo;
+    private final UserRepo userRepo;
+    private final SkillRepo skillRepo;
+    private final RescheduleReqService service;
     private SkillResponseDTO mapSkill(Skill skill){
 
         SkillResponseDTO dto = new SkillResponseDTO(
@@ -75,14 +73,15 @@ public class BookingService {
                 orElseThrow(()->new RuntimeException("Student Not found"));
         User mentor=userRepo.findById(dto.getMentorId())
                 .orElseThrow(()->new RuntimeException("Mentor not found"));
+        if(!mentor.isVerified()){
+            throw new RuntimeException("Mentor is not verified by the Admin");
+        }
         Skill skill=skillRepo.findById(dto.getSkillId())
                 .orElseThrow(()->new RuntimeException("Skill not found"));
-        Optional<Booking> existingBooking=bookingRepo.findFirstByStudentIdAndSkillIdOrderBySessionDate(student.getId(), skill.getId());
+        Optional<Booking> existingBooking=bookingRepo.findFirstByStudentIdAndSkillIdAndStatusInOrderBySessionDate(student.getId(), skill.getId(),
+                List.of(Status.PENDING,Status.ACCEPTED,Status.RESCHEDULE_REQUESTED,Status.RESCHEDULED));
         if(existingBooking.isPresent()){
             throw new RuntimeException("Session already booked");
-        }
-        if(!mentor.isVerified()){
-            throw new RuntimeException("Mentor is not verified");
         }
         Booking booking=new Booking();
         booking.setStudent(student);
@@ -116,20 +115,23 @@ public class BookingService {
                 .orElseThrow(()->new RuntimeException("Booking not found"));
         Long mentorId=booking.getMentor().getId();
         //accept or reject only by mentor
-        if(status==Status.ACCEPTED){
-            if(!mentorId.equals(userId)){
-                throw new RuntimeException("Only mentor can accept/reject");
+        switch (status) {
+            case ACCEPTED -> {
+                if(!mentorId.equals(userId)){
+                    throw new RuntimeException("Only mentor can accept/reject");
+                }   booking.setStatus(status);
             }
-            booking.setStatus(status);        }
-        else if(status==Status.REJECTED){
-            if(!mentorId.equals(userId)){
-                throw new RuntimeException("Only mentor can accept/reject");
+            case REJECTED -> {
+                if(!mentorId.equals(userId)){
+                    throw new RuntimeException("Only mentor can accept/reject");
+                }   booking.setStatus(status);
             }
-            
-            booking.setStatus(status);
-        }
-        else if(status==Status.RESCHEDULE_REQUESTED){
-            service.createRequest(bookingId);
+            case RESCHEDULE_REQUESTED -> {
+                if(booking.getStatus()==Status.COMPLETED || booking.getStatus()==Status.CANCELLED){
+                    throw new RuntimeException("Cannot reschedule");
+                }   service.createRequest(bookingId);
+            }
+            default -> throw new RuntimeException("Unsupported transition");
         }
         return mapToDTO(bookingRepo.save(booking));
     }

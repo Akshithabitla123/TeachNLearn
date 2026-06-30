@@ -2,7 +2,6 @@ package com.example.Edumate.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,15 +18,15 @@ import com.example.Edumate.repository.UserRepo;
 import com.example.Edumate.service.RatingService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/rating")
+@RequiredArgsConstructor
 public class RatingController {
-    @Autowired
-    private RatingService ratingService;
-    @Autowired
-    private UserRepo userRepo;
+    private final RatingService ratingService;
+    private final UserRepo userRepo;
     //add rating
     @PostMapping()
     public String addRating(Authentication authentication,@Valid @RequestBody RatingDTO dto){

@@ -3,7 +3,6 @@ package com.example.Edumate.service;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.Edumate.dto.SkillResponseDTO;
@@ -13,12 +12,13 @@ import com.example.Edumate.model.User;
 import com.example.Edumate.repository.SkillRepo;
 import com.example.Edumate.repository.UserRepo;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class SkillService {
-    @Autowired
-    private SkillRepo skillRepo;
-    @Autowired
-    private UserRepo userRepo;
+    private final SkillRepo skillRepo;
+    private final UserRepo userRepo;
 
     //create skill
     public String createSkill(Long userId, Skill skill){

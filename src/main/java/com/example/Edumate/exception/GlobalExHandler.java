@@ -22,6 +22,14 @@ public class GlobalExHandler {
             });
         return errors;
     }
+    //auth failure
+    @ExceptionHandler(InvalidCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Map<String,String> invalidCredentials(InvalidCredentialsException ex){
+        Map<String,String> errors=new HashMap<>();
+        errors.put("error",ex.getMessage());
+        return errors;
+    }
     //Runtime exceptions
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
