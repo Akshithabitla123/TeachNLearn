@@ -115,24 +115,18 @@ public class BookingService {
                 .orElseThrow(()->new RuntimeException("Booking not found"));
         Long mentorId=booking.getMentor().getId();
         //accept or reject only by mentor
-        switch (status) {
-            case ACCEPTED -> {
-                if(!mentorId.equals(userId)){
-                    throw new RuntimeException("Only mentor can accept/reject");
-                }   booking.setStatus(status);
+       if(status==Status.ACCEPTED || status==Status.REJECTED){
+            if(!mentorId.equals(userId)){
+                throw new RuntimeException("Only mentor can accept/reject");
             }
-            case REJECTED -> {
-                if(!mentorId.equals(userId)){
-                    throw new RuntimeException("Only mentor can accept/reject");
-                }   booking.setStatus(status);
+            booking.setStatus(status);
+       }
+       else if(status==Status.RESCHEDULE_REQUESTED){
+            if(booking.getStatus()==Status.COMPLETED || booking.getStatus()==Status.CANCELLED){
+                throw new RuntimeException("Cannot reschedule");
             }
-            case RESCHEDULE_REQUESTED -> {
-                if(booking.getStatus()==Status.COMPLETED || booking.getStatus()==Status.CANCELLED){
-                    throw new RuntimeException("Cannot reschedule");
-                }   service.createRequest(bookingId);
-            }
-            default -> throw new RuntimeException("Unsupported transition");
-        }
+            service.createRequest(bookingId);
+       }
         return mapToDTO(bookingRepo.save(booking));
     }
     public BookingResponseDTO markCompleted(Long bookingId,Long userId){
@@ -170,7 +164,7 @@ public class BookingService {
         if(booking==null)return null;
         return mapToDTO(booking);
     }
-    //cancel booking
+    //cancel booking (by the student)
     public BookingResponseDTO cancelBooking(Long bookingId,String email){
         Booking booking=bookingRepo.findById(bookingId)
                 .orElseThrow(()->new RuntimeException("Booking not found"));
